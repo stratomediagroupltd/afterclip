@@ -1,4 +1,4 @@
-// watch.js — the Apple Watch (tap to focus, hold for AE/AF lock, the Crown
+// watch.js: the Apple Watch (tap to focus, hold for AE/AF lock, the Crown
 // zooms, the remote saves) and the "any button" devices that light up
 // whenever something saves.
 

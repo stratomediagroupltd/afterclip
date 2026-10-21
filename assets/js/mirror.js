@@ -1,4 +1,4 @@
-// mirror.js — a second screen showing a clip that's already playing: a canvas
+// mirror.js: a second screen showing a clip that's already playing: a canvas
 // drawn from the video's own frames. The two can never drift apart, and the
 // clip downloads and decodes once.
 

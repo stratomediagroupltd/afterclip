@@ -1,4 +1,4 @@
-// motion.js — the shared motion kit: maths, a damped scroll value every
+// motion.js: the shared motion kit: maths, a damped scroll value every
 // scene reads from, scene progress, and the one-shot reveals.
 
 export const $ = (selector, root = document) => root.querySelector(selector);

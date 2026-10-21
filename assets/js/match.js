@@ -1,4 +1,4 @@
-// match.js — "The whole match. Except the goal." Two phones play the same
+// match.js: "The whole match. Except the goal." Two phones play the same
 // penalty: one clip, which the Camera's screen draws from AfterClip's
 // (mirror.js), so the two are always on the same frame. The one filming everything has been recording for 89:40 when its
 // storage runs out, a beat before the kick: the Camera stops while the game

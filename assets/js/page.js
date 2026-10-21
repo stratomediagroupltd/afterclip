@@ -1,4 +1,4 @@
-// page.js — the page around the scenes: the nav, the FAQ, the film, and
+// page.js: the page around the scenes: the nav, the FAQ, the film, and
 // floating devices that rest while they're off screen.
 
 import { $, $$, reducedMotion, watchVisibility } from "./motion.js";

@@ -1,4 +1,4 @@
-// hero.js — the opening screen: AfterClip running on an iPhone, and a
+// hero.js: the opening screen: AfterClip running on an iPhone, and a
 // shutter that really saves.
 
 import { $, reducedMotion, watchVisibility } from "./motion.js";

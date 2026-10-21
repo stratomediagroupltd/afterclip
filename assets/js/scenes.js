@@ -1,4 +1,4 @@
-// scenes.js — the scroll-driven stories: the manifesto lit word by word,
+// scenes.js: the scroll-driven stories: the manifesto lit word by word,
 // the film tape where scrolling is time, and two saves melting into one clip.
 
 import { $, $$, onScroll, onResize, sceneBox, pinnedProgress, progress, easeInOut, scrub, watchVisibility } from "./motion.js";

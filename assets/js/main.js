@@ -1,4 +1,4 @@
-// main.js — starts the page. The order matters: titles split into lines
+// main.js: starts the page. The order matters: titles split into lines
 // before any scene measures where it sits.
 
 import { startScroll, startReveals } from "./motion.js";

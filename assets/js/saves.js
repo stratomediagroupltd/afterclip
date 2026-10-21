@@ -1,4 +1,4 @@
-// saves.js — "Save" from anywhere: the shutter, a key, a game controller,
+// saves.js: "Save" from anywhere: the shutter, a key, a game controller,
 // a device chip or the watch. Each save goes to whoever shows it best (the
 // hero phone while it's on screen); otherwise a toast drops in at the top.
 

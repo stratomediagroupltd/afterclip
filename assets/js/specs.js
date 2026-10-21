@@ -1,4 +1,4 @@
-// specs.js — the camera section. The phone stays put while the list goes by
+// specs.js: the camera section. The phone stays put while the list goes by
 // (on small screens, while you swipe its cards), and shows the app's own
 // screen for whichever spec you're reading.
 

@@ -1,4 +1,4 @@
-// demos.js — the hands-on bits: the buffer ring and the dial that sizes it,
+// demos.js: the hands-on bits: the buffer ring and the dial that sizes it,
 // and the privacy section's zeros.
 
 import { $, $$, clamp, reducedMotion, scrub, setText, watchVisibility } from "./motion.js";
