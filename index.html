@@ -644,11 +644,11 @@ container-type: inline-size;
 .tape__moment b {
 position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
 display: inline-flex; align-items: center; gap: 5px;
-padding: 4px 9px; border-radius: 999px;
+padding: 3px 9px 3px 7px; border-radius: 999px;
 background: var(--yellow); color: #1d1d1f;
 font-size: 12px; font-weight: 700; line-height: 1; white-space: nowrap;
 }
-.tape__moment b i { font-style: normal; }
+.tape__moment b .ico { width: 15px; height: 15px; }
 @container (max-width: 123px) {
 .tape__moment b { justify-content: center; width: 26px; height: 26px; padding: 0; border-radius: 50%; }
 .tape__moment b span { display: none; }
@@ -960,6 +960,7 @@ container-type: inline-size;
       <symbol id="i-lock" viewBox="0 0 48 48"><rect x="10" y="21" width="28" height="21" rx="5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M16 21v-5a8 8 0 0 1 16 0v5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="31" r="2.6" fill="currentColor"/></symbol>
       <symbol id="i-arrow" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.25" fill="currentColor"/></symbol>
+      <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 1.5c.6 5.6 4.9 9.9 10.5 10.5-5.6.6-9.9 4.9-10.5 10.5-.6-5.6-4.9-9.9-10.5-10.5C7.1 11.4 11.4 7.1 12 1.5Z"/></symbol>
       <symbol id="i-close" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
     </defs>
   </svg>
@@ -1176,7 +1177,7 @@ container-type: inline-size;
         <div class="tape" data-tape aria-hidden="true">
           <div class="tape__rec" data-tape-rec>
             <div class="tape__film" data-tape-film>
-              <span class="tape__moment" data-tape-moment><b><i>✦</i><span>The moment</span></b></span>
+              <span class="tape__moment" data-tape-moment><b><svg class="ico" aria-hidden="true"><use href="#i-sparkle"/></svg><span>The moment</span></b></span>
             </div>
           </div>
           <div class="tape__window" data-tape-window><span>The last 15 seconds</span></div>
@@ -1425,7 +1426,7 @@ container-type: inline-size;
             <span class="merge__label merge__label--a" data-merge-la>Saved 15s</span>
             <span class="merge__label merge__label--b" data-merge-lb>Saved 15s</span>
             <span class="merge__label merge__label--one" data-merge-one><svg class="ico"><use href="#i-check"/></svg>One clip · 17s</span>
-            <span class="merge__moment">✦</span>
+            <span class="merge__moment"><svg class="ico" aria-hidden="true"><use href="#i-sparkle"/></svg></span>
           </div>
         </div>
         <ul class="details">
