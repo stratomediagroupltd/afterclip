@@ -1,0 +1,1879 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AfterClip for dance: save the move after the circle goes wild</title>
+  <meta name="description" content="Film dance battles, cyphers and rehearsals on iPhone without filling it up. AfterClip keeps the last seconds, with sound, so after the move that lands you tap Save and keep it.">
+  <meta name="theme-color" content="#050506">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://stratomediagroupltd.github.io/afterclip/dance/">
+  <link rel="icon" href="../assets/img/icon-32.png" sizes="32x32">
+  <link rel="icon" href="../assets/img/icon-64.png" sizes="64x64">
+  <link rel="apple-touch-icon" href="../assets/img/icon-180.png">
+  <!-- Smart App Banner on iPhone: put the app's Apple ID here once it has one. -->
+  <!-- <meta name="apple-itunes-app" content="app-id={{APP_ID}}"> -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AfterClip">
+  <meta property="og:title" content="AfterClip for dance: save the move after the circle goes wild">
+  <meta property="og:description" content="Film dance battles, cyphers and rehearsals on iPhone without filling it up. AfterClip keeps the last seconds, with sound, so after the move that lands you tap Save and keep it.">
+  <!-- Link previews need absolute URLs: https://stratomediagroupltd.github.io/afterclip/ is where the site lives,
+       e.g. https://yourname.github.io/afterclip/ -->
+  <meta property="og:url" content="https://stratomediagroupltd.github.io/afterclip/dance/">
+  <meta property="og:image" content="https://stratomediagroupltd.github.io/afterclip/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AfterClip for dance: save the move after the circle goes wild">
+  <meta name="twitter:description" content="Film dance battles, cyphers and rehearsals on iPhone without filling it up. AfterClip keeps the last seconds, with sound, so after the move that lands you tap Save and keep it.">
+  <meta name="twitter:image" content="https://stratomediagroupltd.github.io/afterclip/assets/img/og.jpg">
+  <link rel="preload" as="image" type="image/webp" fetchpriority="high"
+        imagesrcset="../assets/img/frame-iphone-480.webp 480w, ../assets/img/frame-iphone-600.webp 600w, ../assets/img/frame-iphone.webp 978w" imagesizes="(max-width: 599px) 62vw, (max-width: 899px) 40vw, 400px">
+  <!-- The screen's UI downloads early too: without it, PageSpeed's phone paints the frame later. -->
+  <link rel="preload" as="image" type="image/webp"
+        imagesrcset="../assets/img/hud-match-480.webp 480w, ../assets/img/hud-match-600.webp 600w, ../assets/img/hud-match.webp 880w" imagesizes="(max-width: 599px) 62vw, (max-width: 899px) 40vw, 400px">
+  <script>
+    // Motion and reveals switch on only once the site script is known to run;
+    // if it never arrives, everything shows as plain, finished content.
+    const root = document.documentElement;
+    root.classList.add("js");
+    // A jump to a section (a link to #faq, or arriving with one) lays every
+    // section out first: until they come near, those below the fold only
+    // guess their height, and the jump would land off by the difference.
+    const layOutAll = () => root.classList.add("is-whole");
+    if (location.hash) {
+      layOutAll();
+      // Firefox goes to the section before the last styles are in, and the
+      // page they shorten leaves it elsewhere: once they are, it goes again,
+      // unless the visitor has started moving around by then.
+      let moved = false;
+      const VISITOR_INPUT = ["wheel", "touchstart", "keydown", "pointerdown"];
+      const noteMoved = () => { moved = true; };
+      VISITOR_INPUT.forEach((type) => addEventListener(type, noteMoved, { once: true, passive: true }));
+      const goAgain = () => {
+        VISITOR_INPUT.forEach((type) => removeEventListener(type, noteMoved));
+        const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+        if (target && !moved) target.scrollIntoView({ behavior: "instant" });
+      };
+      // The styles that load without holding up the first paint can arrive
+      // after the page has: wait for them (for up to about three seconds).
+      const STYLE_WAIT_FRAMES = 180;
+      const whenStyled = (frames) => {
+        const late = document.querySelector('link[href$="features.css"]');
+        if (!late || late.sheet || frames === 0) goAgain();
+        else requestAnimationFrame(() => whenStyled(frames - 1));
+      };
+      addEventListener("load", () => whenStyled(STYLE_WAIT_FRAMES), { once: true });
+    }
+    addEventListener("hashchange", layOutAll);
+    addEventListener("click", (event) => {
+      const link = event.target.closest?.("a[href*='#']");
+      if (link && link.hash && link.pathname === location.pathname) layOutAll();
+    }, { capture: true });
+    // The page's height unit (--vh, in the CSS): a hundredth of the screen's
+    // height. On a phone or tablet it changes only on a real resize, such as
+    // a rotation. A browser's toolbar sliding in or out while you scroll
+    // leaves it alone, or the page would relayout under your finger. When it
+    // does change, the part of the page you're reading stays where it is.
+    const TOOLBAR_PX = 160;
+    const touch = matchMedia("(pointer: coarse)");
+    const stage = { width: 0, height: 0 };
+    // What you're reading: inside the pinned tape, how far through it you are;
+    // anywhere else, the first heading, paragraph or picture on the screen.
+    const readingPlace = () => {
+      if (scrollY === 0) return null;
+      const scene = [...document.querySelectorAll(".how")].find((element) => {
+        const box = element.getBoundingClientRect();
+        return box.top <= 0 && box.bottom > 0;
+      });
+      if (scene) {
+        const box = scene.getBoundingClientRect();
+        return { part: scene, share: -box.top / box.height };
+      }
+      const part = [...document.querySelectorAll("main :is(h1, h2, h3, p, li, figure), footer")].find((element) => {
+        const box = element.getBoundingClientRect();
+        return box.height > 0 && box.top >= 0; // Hidden ones measure 0 × 0 at the top.
+      });
+      return part ? { part, top: part.getBoundingClientRect().top } : null;
+    };
+    // Noted when scrolling stops, so a resize can put it back from before the
+    // text re-wrapped to the new width.
+    let place = null;
+    let noteTimer = 0;
+    addEventListener("scroll", () => {
+      clearTimeout(noteTimer);
+      place = undefined; // Still scrolling: a resize now measures the place afresh.
+      noteTimer = setTimeout(() => { place = readingPlace(); }, 150);
+    }, { passive: true });
+    const setStage = () => {
+      const { innerWidth: width, innerHeight: height } = window;
+      if (width === stage.width && (height === stage.height || (touch.matches && Math.abs(height - stage.height) < TOOLBAR_PX))) return;
+      if (place === undefined) place = readingPlace();
+      stage.width = width;
+      stage.height = height;
+      root.style.setProperty("--vh", `${height / 100}px`);
+      root.classList.toggle("is-tall", height >= 820);
+      if (!place || !place.part.isConnected) return;
+      const box = place.part.getBoundingClientRect();
+      const moved = "share" in place ? box.top + place.share * box.height : box.top - place.top;
+      scrollBy({ top: moved, behavior: "instant" });
+    };
+    setStage();
+    addEventListener("resize", setStage);
+    const plain = () => { if (!window.__afterclip) root.classList.remove("js"); };
+    // None of the script is needed to draw the page, so it loads after the
+    // page has (or after 2.5 s on a slow connection, whichever comes first).
+    let started = false;
+    // Visits are counted by Cloudflare Web Analytics: no cookies, nothing kept
+    // on the device. It stays off until its token replaces the placeholder,
+    // and on a copy of the site served from this computer.
+    const countVisit = () => {
+      const token = "fb46847f3f8a47828e1d68c609162889";
+      if (token.startsWith("{") || ["localhost", "127.0.0.1"].includes(location.hostname)) return;
+      const beacon = document.createElement("script");
+      beacon.defer = true;
+      beacon.src = "https://static.cloudflareinsights.com/beacon.min.js";
+      beacon.dataset.cfBeacon = JSON.stringify({ token });
+      document.head.append(beacon);
+    };
+    const start = () => {
+      if (started) return;
+      started = true;
+      import("../assets/js/main.js").catch(plain);
+      countVisit();
+    };
+    addEventListener("load", start, { once: true });
+    setTimeout(start, 2500);
+    setTimeout(plain, 8000);
+  </script>
+  <style>
+@property --accent {
+syntax: "<color>";
+inherits: true;
+initial-value: #f54236;
+}
+:root {
+--accent: #f54236;
+--on-accent: #fff;
+--accent-ink: var(--accent);
+--bg: #050506;
+--surface: #111113;
+--surface-2: #1c1c1f;
+--line: rgb(255 255 255 / 0.09);
+--text: #f5f5f7;
+--muted: #a1a1a6;
+--faint: #86868b;
+--green: #30d158;
+--yellow: #ffd60a;
+--glass: rgb(16 16 18 / 0.68);
+--font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+--font-round: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+--font-mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+--ease: cubic-bezier(0.16, 1, 0.3, 1);
+--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+--spring: linear(0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%, 0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.015 55%, 1.017 63.9%, 1.001 85.8%, 1);
+--wrap: min(1180px, 100% - 48px);
+--nav-h: 52px;
+color-scheme: dark;
+transition: --accent 0.6s var(--ease);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) {
+html { scroll-behavior: smooth; }
+}
+body {
+margin: 0;
+background: var(--bg);
+color: var(--text);
+font: 400 17px/1.5 var(--font);
+letter-spacing: -0.011em;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+text-rendering: optimizeLegibility;
+overflow-x: clip;
+}
+img, video, canvas, svg { display: block; max-width: 100%; }
+img, video { height: auto; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+a { color: inherit; }
+h1, h2, h3, p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+::selection { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 80%, white); outline-offset: 3px; border-radius: 8px; }
+.visually-hidden {
+position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.ico { width: 1.15em; height: 1.15em; flex: none; fill: currentColor; }
+.wrap { width: var(--wrap); margin-inline: auto; }
+.iphone, .awatch, .watches, .hero__device, .specs__device, .duel, .storage, .tape, .ring, .dial,
+.merge, .devices, .keycap, .btn, .nav, .dock, .toast, .flyclip, .film__inner, .finale__icon, .privacy__lock, .zeros dd {
+-webkit-user-select: none; user-select: none;
+-webkit-touch-callout: none;
+}
+img { -webkit-user-drag: none; }
+.skip {
+position: fixed; left: 16px; top: -60px; z-index: 100;
+padding: 10px 16px; border-radius: 12px; background: var(--text); color: var(--bg);
+font-weight: 600; text-decoration: none; transition: top 0.2s;
+}
+.skip:focus { top: 12px; }
+.eyebrow {
+display: inline-flex; align-items: center; gap: 10px;
+margin-bottom: 18px;
+color: var(--accent-ink);
+font-size: clamp(15px, 1.2vw, 18px); font-weight: 600; letter-spacing: -0.005em;
+}
+.title {
+font-size: clamp(40px, 6.2vw, 92px);
+font-weight: 700; line-height: 1.0; letter-spacing: -0.035em;
+text-wrap: balance;
+}
+.title--center { text-align: center; }
+.body {
+max-width: 34em;
+margin-top: 24px;
+color: var(--muted);
+font-size: clamp(17px, 1.4vw, 21px); line-height: 1.5; letter-spacing: -0.015em;
+text-wrap: pretty;
+}
+.body strong { color: var(--text); font-weight: 600; }
+.body a { color: var(--text); text-underline-offset: 3px; }
+.body--center { margin-inline: auto; text-align: center; }
+.hint { color: var(--faint); font-size: 14px; }
+.rec-dot { position: relative; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+.rec-dot::after {
+content: ""; position: absolute; inset: 0; border-radius: 50%;
+background: var(--accent);
+}
+.is-live .rec-dot::after { animation: rec 1.6s ease-out infinite; }
+@keyframes rec {
+from { transform: scale(1); opacity: 0.6; }
+70%, to { transform: scale(3); opacity: 0; }
+}
+.btn {
+--btn-bg: color-mix(in srgb, var(--accent) 88%, #000);
+position: relative;
+display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+height: 48px; padding: 0 24px;
+border-radius: 999px;
+background: var(--btn-bg);
+color: var(--on-accent);
+font-size: 17px; font-weight: 600; letter-spacing: -0.015em;
+text-decoration: none; white-space: nowrap;
+box-shadow: 0 8px 30px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+transition: transform 0.5s var(--spring), box-shadow 0.3s, background-color 0.3s;
+}
+.btn:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 14px 40px -8px color-mix(in srgb, var(--accent) 80%, transparent); }
+.btn:active { transform: scale(0.97); transition-duration: 0.12s; }
+.btn--sm { height: 32px; padding: 0 14px; font-size: 14px; box-shadow: none; }
+.btn--lg { height: 56px; padding: 0 28px; font-size: 18px; }
+.btn--ghost {
+--btn-bg: rgb(255 255 255 / 0.1);
+color: var(--text);
+box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+}
+.btn--ghost:hover { --btn-bg: rgb(255 255 255 / 0.16); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22); }
+.btn__meta { color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+.arrow-link {
+display: inline-flex; align-items: center; gap: 4px;
+color: var(--accent-ink); font-weight: 600; text-decoration: none;
+}
+.arrow-link .ico { transition: transform 0.4s var(--spring); }
+.arrow-link:hover .ico { transform: translateX(4px); }
+.nav {
+position: fixed; inset: 0 0 auto; z-index: 50;
+height: var(--nav-h);
+transition: background-color 0.4s, box-shadow 0.4s;
+}
+.nav.is-scrolled {
+background: var(--glass);
+-webkit-backdrop-filter: saturate(160%) blur(16px); backdrop-filter: saturate(160%) blur(16px);
+box-shadow: 0 1px 0 var(--line);
+}
+.nav__inner {
+width: var(--wrap); height: 100%; margin-inline: auto;
+display: flex; align-items: center; gap: 24px;
+}
+.nav__brand {
+display: inline-flex; align-items: center; gap: 10px; margin-right: auto;
+font-size: 18px; font-weight: 650; letter-spacing: -0.02em; text-decoration: none;
+}
+.nav__brand img { border-radius: 6px; }
+.nav__links { display: flex; gap: 26px; }
+.nav__links a {
+position: relative;
+color: var(--muted); font-size: 14px; text-decoration: none;
+transition: color 0.25s;
+}
+.nav__links a:hover, .nav__links a[aria-current="true"] { color: var(--text); }
+.nav__links a[aria-current="true"]::after {
+content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; border-radius: 2px;
+background: var(--accent);
+}
+@media (max-width: 760px) {
+.nav__links { display: none; }
+}
+.js [data-reveal] {
+opacity: 0;
+transform: translate3d(0, 28px, 0);
+transition: opacity 0.9s var(--ease) var(--d, 0ms), transform 1.1s var(--ease) var(--d, 0ms);
+}
+.js [data-reveal].is-in { opacity: 1; transform: none; }
+.js [data-wipe] .line { display: block; overflow: clip; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+.js [data-wipe] .line > span {
+display: block;
+transform: translate3d(0, 108%, 0);
+transition: transform 1.15s var(--ease) calc(var(--i, 0) * 90ms);
+}
+.js [data-wipe].is-in .line > span { transform: none; }
+.is-live .float { animation: float 7s ease-in-out infinite alternate; }
+.is-live .float--slow { animation-duration: 9s; animation-delay: -3s; }
+.float.is-away { animation-play-state: paused; }
+@keyframes float {
+from { transform: translate3d(0, -7px, 0); }
+to { transform: translate3d(0, 7px, 0); }
+}
+.toast {
+display: inline-flex; align-items: center; gap: 0.62em;
+padding: 0.5em 1.15em 0.5em 0.62em;
+border-radius: 999px;
+background: rgb(18 22 20 / 0.92);
+color: #fff;
+font-weight: 600; letter-spacing: -0.01em; white-space: nowrap;
+box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+}
+.toast__check {
+display: grid; place-items: center;
+width: 1.5em; height: 1.5em; border-radius: 50%;
+background: var(--green); color: #0b2a14;
+}
+.toast__check .ico { width: 1em; height: 1em; }
+.toast__meta { color: rgb(255 255 255 / 0.55); font-weight: 500; }
+.global-toasts {
+position: fixed; left: 50%; top: calc(var(--nav-h) + 14px); z-index: 60;
+display: grid; justify-items: center; gap: 8px;
+transform: translateX(-50%);
+font-size: 15px;
+pointer-events: none;
+}
+html:not(.js) [data-film-open] { display: none; }
+.film {
+width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none;
+margin: 0; padding: 0; border: 0;
+background: transparent; color: #fff;
+}
+.film[open] { display: grid; place-items: center; }
+.film::backdrop { background: rgb(0 0 0 / 0.86); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.film__inner {
+position: relative;
+height: min(88dvh, 960px); aspect-ratio: 9 / 16; max-width: 92vw;
+animation: film-in 0.6s var(--ease);
+}
+.film__video { width: 100%; height: 100%; border-radius: 26px; background: #000; object-fit: cover; }
+.film__close {
+position: absolute; top: 0; left: calc(100% + 14px);
+display: grid; place-items: center;
+width: 44px; height: 44px; border-radius: 50%;
+background: rgb(255 255 255 / 0.14);
+transition: background-color 0.2s;
+}
+.film__close:hover { background: rgb(255 255 255 / 0.24); }
+@media (max-width: 640px) {
+.film__close { left: auto; right: 10px; top: 10px; background: rgb(0 0 0 / 0.5); }
+}
+@keyframes film-in {
+from { opacity: 0; transform: translateY(24px) scale(0.96); }
+}
+.footer {
+position: relative;
+padding: 40px 0 calc(40px + env(safe-area-inset-bottom));
+border-top: 1px solid var(--line);
+color: var(--faint);
+font-size: 13px;
+}
+.footer__inner { display: grid; grid-template-columns: auto 1fr; gap: 14px 32px; align-items: center; }
+.footer__brand { display: inline-flex; align-items: center; gap: 8px; color: var(--text); font-weight: 600; font-size: 15px; }
+.footer__brand img { border-radius: 5px; }
+.footer nav { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: end; }
+.footer nav a { text-decoration: none; transition: color 0.2s; }
+.footer nav a:hover, .footer nav a[aria-current="page"] { color: var(--text); }
+.footer__legal { grid-column: 1 / -1; max-width: 70em; }
+@media (max-width: 640px) {
+.footer__inner { grid-template-columns: 1fr; }
+.footer nav { justify-content: start; }
+}
+@media (prefers-reduced-motion: reduce) {
+*, *::before, *::after {
+animation-duration: 0.01ms !important;
+animation-iteration-count: 1 !important;
+transition-duration: 0.01ms !important;
+}
+.js [data-reveal], .js [data-wipe] .line > span { transform: none; }
+}
+  </style>
+  <style>
+.section { position: relative; padding: clamp(110px, var(--vh, 1vh) * 16, 190px) 0; scroll-margin-top: var(--nav-h); }
+.section__head { margin-bottom: clamp(48px, 7vw, 84px); }
+.section__head--center { text-align: center; }
+.section__head--center .body { margin-inline: auto; }
+.split {
+display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+align-items: center; gap: clamp(40px, 7vw, 110px);
+}
+.split--flip .split__copy { order: 2; }
+@media (max-width: 900px) {
+.split { grid-template-columns: minmax(0, 1fr); }
+.split--flip .split__copy { order: 0; }
+}
+.ticks { display: grid; gap: 12px; margin-top: 30px; }
+.ticks li { display: flex; gap: 12px; align-items: baseline; font-size: 17px; }
+.ticks li::before {
+content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; translate: 0 -2px;
+background: var(--accent); box-shadow: 0 0 10px var(--accent);
+}
+.iphone {
+--pw: 300px;
+position: relative;
+width: var(--pw); aspect-ratio: 978 / 2000;
+flex: none;
+}
+.iphone__screen {
+position: absolute; left: 5.317%; top: 2.5%; width: 89.366%; height: 95%;
+overflow: hidden; border-radius: 16% / 7.37%;
+background: #000;
+container-type: inline-size;
+}
+.iphone__screen > picture, .iphone__screen > picture img, .iphone__video {
+position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.iphone__frame, .iphone__frame img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.awatch { position: relative; width: var(--ww, 300px); aspect-ratio: 560 / 880; flex: none; }
+.awatch__screen {
+position: absolute; left: 12.857%; top: 21.818%; width: 74.286%; height: 56.364%;
+overflow: hidden; border-radius: 24% / 20.2%;
+background: #000;
+container-type: inline-size;
+}
+.awatch__screen picture, .awatch__screen picture img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.awatch__frame, .awatch__frame img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.hero { position: relative; }
+.hero__stage {
+position: relative;
+min-height: calc(var(--vh, 1vh) * 100);
+display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
+gap: clamp(32px, 6vw, 110px);
+padding: calc(var(--nav-h) + 24px) max(24px, (100% - 1180px) / 2) 40px;
+overflow: clip;
+}
+.hero__stage::after {
+content: ""; position: absolute; inset: 0; z-index: -1;
+background: radial-gradient(42% 30% at 62% 76%, color-mix(in srgb, var(--accent) 26%, transparent), transparent);
+pointer-events: none;
+}
+.hero__copy { position: relative; z-index: 2; }
+.hero__title {
+font-size: clamp(50px, 7.2vw, 116px);
+font-weight: 700; line-height: 0.98; letter-spacing: -0.045em;
+}
+.hero__title .line { display: block; overflow: clip; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.hero__title .line > span { display: block; }
+.hero__lede { max-width: 30em; margin-top: 26px; color: var(--muted); font-size: clamp(17px, 1.45vw, 22px); line-height: 1.45; text-wrap: pretty; }
+.hero__ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+.hero__soon { display: inline-flex; align-items: center; gap: 9px; margin-top: 18px; color: var(--muted); font-size: 15px; font-weight: 500; }
+.hero__soon-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 10px color-mix(in srgb, var(--yellow) 60%, transparent); }
+.hero__device { position: relative; display: grid; justify-items: center; gap: 18px; z-index: 1; }
+.hero__device .iphone { --pw: calc(min(var(--vh, 1vh) * 78, 800px) * 0.489); }
+.hero__device::before {
+content: ""; position: absolute; left: 50%; top: 46%; z-index: -1;
+width: 230%; height: 120%;
+transform: translate(-50%, -50%);
+background: radial-gradient(closest-side, rgb(214 192 168 / 0.16), transparent);
+pointer-events: none;
+}
+.hero__hint { color: var(--faint); font-size: 14px; }
+@keyframes hero-rise { from { transform: translate3d(0, 106%, 0); } }
+.js .hero__title .line > span { animation: hero-rise 0.9s var(--ease) both; }
+.js .hero__title .line:nth-child(2) > span { animation-delay: 0.07s; }
+@media (max-width: 899px) {
+.hero__stage {
+grid-template-columns: 1fr; grid-template-rows: auto auto;
+align-content: start; justify-items: center; gap: 30px;
+padding-top: calc(var(--nav-h) + 18px); padding-bottom: 18px;
+text-align: center;
+}
+.hero__copy .eyebrow { margin-bottom: 12px; }
+.hero__title { font-size: clamp(42px, 11.5vw, 72px); }
+.hero__lede { display: none; }
+.hero__ctas { justify-content: center; margin-top: 20px; }
+.hero__ctas .btn--lg { height: 48px; padding: 0 20px; font-size: 16px; }
+.hero__soon { margin-top: 12px; font-size: 14px; }
+.hero__device .iphone { --pw: min(calc(min(var(--vh, 1vh) * 62, 620px) * 0.489), 70vw); }
+.hero__hint { display: none; }
+}
+@media (max-width: 899px) {
+.is-tall .hero__lede { display: block; margin-inline: auto; margin-top: 16px; font-size: 17px; }
+}
+.iphone__hud { pointer-events: none; }
+.toasts {
+position: absolute; left: 0; right: 0; top: 14.2%; z-index: 3;
+display: grid; justify-items: center; gap: 1.6cqi;
+font-size: 3.9cqi;
+pointer-events: none;
+}
+.toasts .toast { padding: 1.6cqi 4.6cqi 1.6cqi 2.2cqi; gap: 2.3cqi; }
+.shutter-hit, .shutter-ring {
+position: absolute; left: 50%; top: 89%; z-index: 4;
+width: 19.5%; aspect-ratio: 1;
+border-radius: 50%;
+transform: translate(-50%, -50%);
+}
+.shutter-hit { -webkit-tap-highlight-color: transparent; }
+.shutter-hit:active { background: rgb(0 0 0 / 0.12); }
+.shutter-ring { pointer-events: none; box-shadow: 0 0 0 0.9cqi var(--accent), 0 0 6cqi var(--accent); opacity: 0; }
+.flyclip {
+position: absolute; z-index: 5;
+width: 112px; padding: 6px 6px 10px;
+border-radius: 16px;
+background: rgb(28 28 30 / 0.96);
+box-shadow: 0 24px 60px rgb(0 0 0 / 0.5), inset 0 0 0 1px rgb(255 255 255 / 0.1);
+pointer-events: none;
+}
+.flyclip video { width: 100%; aspect-ratio: 9 / 16; border-radius: 11px; object-fit: cover; background: #000; }
+.flyclip p { margin-top: 8px; color: #fff; font-size: 12px; font-weight: 600; line-height: 1.25; text-align: center; }
+.flyclip p span { display: block; color: rgb(255 255 255 / 0.55); font-weight: 500; }
+.manifesto { padding: clamp(120px, var(--vh, 1vh) * 22, 240px) 0; }
+.manifesto__text {
+width: var(--wrap); max-width: 1040px; margin-inline: auto;
+font-size: clamp(30px, 4.5vw, 66px); font-weight: 650; line-height: 1.12; letter-spacing: -0.03em;
+text-wrap: pretty;
+}
+.manifesto__text strong { font-weight: 700; }
+.js .manifesto__text .w { color: #6e6e73; transition: color 0.35s linear; }
+.js .manifesto__text .w.is-lit { color: var(--text); }
+.js .manifesto__text strong .w.is-lit { color: var(--accent); }
+.how { position: relative; scroll-margin-top: 0; }
+.js .how { height: calc(var(--vh, 1vh) * 400); }
+.how__stage {
+--gap: clamp(26px, var(--vh, 1vh) * 6, 70px);
+display: flex; flex-direction: column; justify-content: center; gap: var(--gap);
+padding: calc(var(--nav-h) + 30px) 0 50px;
+overflow: clip;
+}
+.js .how__stage { position: sticky; top: 0; height: calc(var(--vh, 1vh) * 100); }
+.how__head { position: relative; }
+.how__steps { display: grid; gap: 28px; }
+.js .how__steps { display: grid; grid-template-areas: "s"; gap: 0; }
+.how__step h3 { font-size: clamp(36px, 5vw, 72px); font-weight: 700; line-height: 1.02; letter-spacing: -0.04em; }
+.how__step p { max-width: 30em; margin-top: 16px; color: var(--muted); font-size: clamp(17px, 1.4vw, 21px); }
+.js .how__step {
+grid-area: s;
+opacity: 0; transform: translateY(26px);
+transition: opacity 0.6s var(--ease), transform 0.8s var(--ease);
+pointer-events: none;
+}
+.js .how__step.is-on { opacity: 1; transform: none; pointer-events: auto; }
+.how__dots { display: none; gap: 8px; margin-top: 26px; }
+.js .how__dots { display: flex; }
+.how__dots i { width: 28px; height: 4px; border-radius: 4px; background: var(--line); transition: background-color 0.4s, width 0.5s var(--ease); }
+.how__dots i.is-on { width: 48px; background: var(--accent); }
+.tape {
+--fw: clamp(58px, 9.4vw, 132px);
+--fh: calc(var(--fw) * 1.8333);
+--win: 6;
+--now: 0.76;
+--top: 46px;
+position: relative;
+width: var(--wrap); margin-inline: auto;
+height: calc(var(--fh) + var(--top) + 96px);
+}
+@media (max-width: 700px) { .tape { --win: 5; --now: 0.84; --top: 40px; } }
+@supports (height: 100svh) {
+.js .tape {
+--fw: clamp(58px, min(9.4vw, (var(--vh, 1vh) * 100 - 533px) / 2.57), 132px);
+margin-top: max(0px, var(--fh) * 0.4 + 78px - var(--top) - var(--gap));
+}
+}
+.tape__rec {
+position: absolute; left: 0; top: var(--top);
+width: calc(100% * var(--now)); height: var(--fh);
+overflow: hidden;
+}
+.tape__rec::after {
+content: ""; position: absolute; left: 0; top: 0; bottom: 0; z-index: 2;
+right: calc(var(--win) * var(--fw));
+background: linear-gradient(90deg, var(--bg), rgb(5 5 6 / 0.78) 35%, rgb(5 5 6 / 0.7));
+pointer-events: none;
+}
+.tape__film, .tape__clip-film {
+background: url("../assets/img/strip.jpg") 0 0 / calc(var(--fw) * 26) 100% no-repeat;
+background-image: image-set(url("../assets/img/strip.webp") type("image/webp"), url("../assets/img/strip.jpg") type("image/jpeg"));
+}
+.js .tape:not(.is-near) .tape__film, .js .tape:not(.is-near) .tape__clip-film { background-image: none; }
+.tape__film {
+position: absolute; left: 0; top: 0; height: 100%; width: calc(var(--fw) * 26);
+will-change: transform;
+}
+.tape__film::before, .tape__clip-film::before {
+content: ""; position: absolute; inset: 0;
+background:
+linear-gradient(90deg, rgb(0 0 0 / 0.9) 0 3px, transparent 3px) 0 0 / var(--fw) 100%,
+radial-gradient(circle, rgb(0 0 0 / 0.75) 0 2.5px, transparent 3px) 0 4px / calc(var(--fw) / 4) 12px repeat-x,
+radial-gradient(circle, rgb(0 0 0 / 0.75) 0 2.5px, transparent 3px) 0 calc(100% - 4px) / calc(var(--fw) / 4) 12px repeat-x;
+}
+.tape__clip-film::before {
+background:
+radial-gradient(circle, rgb(0 0 0 / 0.75) 0 2.5px, transparent 3px) 0 4px / calc(var(--fw) / 4) 12px repeat-x,
+radial-gradient(circle, rgb(0 0 0 / 0.75) 0 2.5px, transparent 3px) 0 calc(100% - 4px) / calc(var(--fw) / 4) 12px repeat-x;
+}
+.tape__clip-film::after {
+content: ""; position: absolute; top: 0; bottom: 0; z-index: 2;
+left: calc(var(--fw) - 1.5px); right: calc(var(--fw) - 1.5px);
+background: linear-gradient(90deg, rgb(0 0 0 / 0.9) 0 3px, transparent 3px) 0 0 / var(--fw) 100%;
+}
+.tape__moment {
+position: absolute; top: 0; left: calc(var(--fw) * var(--km, 14)); z-index: 1;
+width: var(--fw); height: 100%;
+box-shadow: inset 0 0 0 3px var(--yellow), 0 0 40px color-mix(in srgb, var(--yellow) 60%, transparent);
+border-radius: 4px;
+container-type: inline-size;
+}
+.tape__moment b {
+position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+display: inline-flex; align-items: center; gap: 5px;
+padding: 4px 9px; border-radius: 999px;
+background: var(--yellow); color: #1d1d1f;
+font-size: 12px; font-weight: 700; line-height: 1; white-space: nowrap;
+}
+.tape__moment b i { font-style: normal; }
+@container (max-width: 123px) {
+.tape__moment b { justify-content: center; width: 26px; height: 26px; padding: 0; border-radius: 50%; }
+.tape__moment b span { display: none; }
+}
+.tape__window {
+position: absolute; top: calc(var(--top) - 8px);
+left: calc(100% * var(--now) - var(--win) * var(--fw));
+width: calc(var(--win) * var(--fw)); height: calc(var(--fh) + 16px);
+border-radius: 14px;
+box-shadow: inset 0 0 0 2px var(--accent), 0 0 50px color-mix(in srgb, var(--accent) 35%, transparent);
+pointer-events: none;
+}
+.tape__window span {
+position: absolute; left: 2px; bottom: calc(100% + 10px);
+color: var(--accent); font-size: 14px; font-weight: 600; white-space: nowrap;
+}
+.tape__over { position: absolute; left: 0; top: 10px; color: var(--faint); font-size: 14px; }
+@media (max-width: 700px) { .tape__over { display: none; } }
+.tape__now {
+position: absolute; top: calc(var(--top) - 22px); left: calc(100% * var(--now));
+width: 2px; height: calc(var(--fh) + 44px); margin-left: -1px;
+background: linear-gradient(transparent, #fff 14%, #fff 86%, transparent);
+}
+.tape__now span {
+position: absolute; left: 12px; top: -6px;
+display: inline-flex; align-items: center; gap: 6px;
+font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.tape__now i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.is-live .tape__now i { animation: blink 1.2s steps(2, jump-none) infinite; }
+@keyframes blink { 50% { opacity: 0.25; } }
+.tape__shutter {
+position: absolute; left: calc(100% * var(--now)); top: calc(var(--top) + var(--fh) + 34px);
+display: grid; place-items: center;
+width: 58px; height: 58px; border-radius: 50%;
+transform: translateX(-50%);
+background: #fff; color: #000;
+box-shadow: 0 0 0 4px var(--bg), 0 0 0 7px #fff;
+font: 800 19px/1 var(--font-round);
+transition: transform 0.5s var(--spring), box-shadow 0.3s;
+}
+.tape__shutter.is-pressed { transform: translateX(-50%) scale(0.86); box-shadow: 0 0 0 4px var(--bg), 0 0 0 7px var(--accent), 0 0 40px var(--accent); }
+.tape__clip {
+position: absolute; top: var(--top); z-index: 2;
+left: calc(100% * var(--now) - var(--win) * var(--fw));
+width: calc(var(--win) * var(--fw)); height: var(--fh);
+opacity: 0;
+will-change: transform;
+}
+html:not(.js) .tape__clip { display: none; }
+.tape__clip-card {
+position: absolute; inset: 0; overflow: hidden;
+border-radius: 14px;
+background: var(--bg);
+box-shadow: 0 30px 70px rgb(0 0 0 / 0.6);
+}
+.tape__clip-card::after {
+content: ""; position: absolute; inset: 0; z-index: 3;
+border-radius: inherit; box-shadow: inset 0 0 0 2px var(--green);
+pointer-events: none;
+}
+.tape__clip-film { position: absolute; inset: 0; }
+.tape__clip-film .tape__moment { top: 2px; height: calc(100% - 4px); z-index: 3; }
+.tape__clip-film .tape__moment.is-first { margin-left: 2px; width: calc(var(--fw) - 2px); border-radius: 12px 4px 4px 12px; }
+.tape__clip-label {
+position: absolute; left: 50%; top: -18px; transform: translateX(-50%);
+display: inline-flex; align-items: center; gap: 6px;
+padding: 6px 12px 6px 8px; border-radius: 999px;
+background: var(--green); color: #0b2a14;
+font-size: 13px; font-weight: 700; white-space: nowrap;
+z-index: 4;
+opacity: 0;
+}
+.tape__clip-label .ico { width: 16px; height: 16px; }
+.ring-demo { display: grid; justify-items: center; gap: 22px; }
+.ring { position: relative; width: min(360px, 78vw); aspect-ratio: 1; border-radius: 50%; }
+.ring::before {
+content: ""; position: absolute; inset: 0; border-radius: 50%;
+background: radial-gradient(closest-side, transparent calc(100% - 16px), rgb(255 255 255 / 0.08) calc(100% - 15px), rgb(255 255 255 / 0.08) 99%, transparent 100%);
+}
+.ring__spin { position: absolute; inset: 0; will-change: transform; }
+.ring__trail {
+position: absolute; inset: 0; border-radius: 50%;
+background: conic-gradient(from 0deg, transparent 0deg, color-mix(in srgb, var(--accent) 8%, transparent) 70deg, color-mix(in srgb, var(--accent) 90%, transparent) 345deg, #fff 360deg);
+-webkit-mask: radial-gradient(closest-side, transparent calc(100% - 16px), #000 calc(100% - 15px));
+mask: radial-gradient(closest-side, transparent calc(100% - 16px), #000 calc(100% - 15px));
+}
+.ring__head {
+position: absolute; left: 50%; top: 0;
+width: 22px; height: 22px; margin: -3px 0 0 -11px; border-radius: 50%;
+background: #fff;
+box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 30px 6px var(--accent);
+}
+.ring__readout { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; text-align: center; }
+.ring__readout output {
+font: 800 clamp(80px, 9vw, 124px)/0.9 var(--font-round);
+letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
+}
+.ring__readout span { margin-top: 10px; color: var(--muted); font-size: 17px; font-weight: 500; }
+.ring__note { color: var(--muted); font-size: 15px; min-height: 1.5em; }
+.dial {
+--step: 66px;
+position: relative;
+width: min(440px, 86vw); height: 72px;
+cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+border-radius: 12px;
+}
+.dial__window {
+position: absolute; inset: 0; overflow: hidden;
+-webkit-mask-image: linear-gradient(90deg, transparent, #000 24%, #000 76%, transparent);
+mask-image: linear-gradient(90deg, transparent, #000 24%, #000 76%, transparent);
+}
+.dial:active { cursor: grabbing; }
+.dial__tape {
+position: absolute; left: 50%; top: 0; height: 100%;
+width: calc(var(--step) * 9);
+background:
+linear-gradient(90deg, rgb(255 255 255 / 0.85) 0 2px, transparent 2px) 0 6px / var(--step) 22px repeat-x,
+linear-gradient(90deg, rgb(255 255 255 / 0.3) 0 1.5px, transparent 1.5px) 0 12px / calc(var(--step) / 5) 12px repeat-x;
+background-position: -1px 6px, -0.75px 12px;
+will-change: transform;
+}
+.dial__tape span {
+position: absolute; top: 44px; left: 0;
+transform: translateX(-50%);
+color: var(--muted); font: 600 13px/1 var(--font-round); white-space: nowrap;
+transition: color 0.3s, transform 0.3s;
+}
+.dial__tape span.is-on { color: var(--text); transform: translateX(-50%) scale(1.15); }
+.dial__pointer {
+position: absolute; left: 50%; top: 0;
+width: 3px; height: 30px; margin-left: -1.5px; border-radius: 3px;
+background: var(--accent); box-shadow: 0 0 12px var(--accent);
+}
+.dial__pointer::after {
+content: ""; position: absolute; left: 50%; top: 30px; translate: -50% 0;
+border: 6px solid transparent; border-bottom-color: var(--accent); border-top: 0;
+}
+.duel {
+display: grid; grid-template-columns: repeat(2, auto); justify-content: center;
+column-gap: clamp(28px, 8vw, 130px); row-gap: 20px;
+}
+.duel__side { --pw: clamp(220px, 21vw, 290px); margin: 0; display: grid; justify-items: center; align-content: start; gap: 18px; }
+.duel .iphone { --pw: inherit; }
+.duel__label { color: var(--muted); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; text-align: center; }
+.duel__side--afterclip .duel__label { color: var(--accent-ink); }
+.duel__note { color: var(--muted); font-size: 14px; text-align: center; }
+.duel__note b { color: var(--text); font-weight: 600; }
+@media (max-width: 700px) {
+.duel { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 14px; }
+.duel__side { display: contents; --pw: 42vw; }
+.duel__label { grid-row: 1; }
+.duel .iphone { grid-row: 2; justify-self: center; }
+.duel__note { grid-row: 3; font-size: 12px; }
+.duel .storage { grid-column: 1 / -1; }
+.duel__side--camera .storage { grid-row: 4; }
+.duel__side--afterclip .storage { grid-row: 5; }
+.duel__side--camera > * { grid-column: 1; }
+.duel__side--afterclip > * { grid-column: 2; }
+.duel__side > .storage { grid-column: 1 / -1; }
+}
+.cam { background: #000; }
+.cam__feed { position: absolute; left: 0; right: 0; top: 6.5%; height: 82%; width: 100%; background: 50% 50% / cover no-repeat; }
+.cam > span, .cam__alert { position: absolute; z-index: 2; }
+.cam__format, .cam__tools {
+top: 10.5%; height: 9.1cqi;
+display: flex; align-items: center;
+border-radius: 99px; background: rgb(28 28 30 / 0.92);
+transform: translateY(-50%);
+color: #fff; opacity: 0;
+}
+.cam__format { left: 4.1%; padding: 0 3cqi; gap: 0.4cqi; font: 500 3.9cqi/1 var(--font-mono); }
+.cam__format small { align-self: flex-start; margin: 2.1cqi 2.4cqi 0 0.2cqi; color: rgb(255 255 255 / 0.62); font: 500 2.2cqi/1 var(--font); }
+.cam__format small:last-child { margin-right: 0; }
+.cam__tools { right: 4.1%; padding: 0 3.4cqi; gap: 4.4cqi; }
+.cam__tools svg { width: 4.6cqi; height: 4.6cqi; }
+.cam__timer {
+left: 50%; top: 8.6%;
+padding: 0.75cqi 2.3cqi; border-radius: 1.2cqi;
+transform: translateX(-50%);
+background: #dc2b21; color: #fff;
+font: 500 4.8cqi/1.15 var(--font-mono); font-variant-numeric: tabular-nums;
+}
+.cam__zoom { left: 50%; top: 71.1%; display: flex; align-items: center; gap: 0; transform: translate(-50%, -50%); color: #fff; font: 500 3.3cqi/1 var(--font); }
+.cam__zoom span { display: grid; place-items: center; width: 9.9cqi; aspect-ratio: 1; border-radius: 50%; }
+.cam__zoom .is-on { background: rgb(28 28 30 / 0.72); color: #ffd60a; }
+.cam__pause, .cam__photo, .cam__record { top: 81.9%; display: grid; place-items: center; border-radius: 50%; transform: translate(-50%, -50%); }
+.cam__pause { left: 14.7%; width: 13.9cqi; aspect-ratio: 1; display: flex; justify-content: center; gap: 1.3cqi; background: rgb(44 44 46 / 0.78); }
+.cam__pause i { align-self: center; width: 1.7cqi; height: 4.4cqi; border-radius: 0.4cqi; background: #fff; }
+.cam__photo { left: 85.3%; width: 13.9cqi; aspect-ratio: 1; background: rgb(44 44 46 / 0.78); }
+.cam__photo::before { content: ""; width: 81%; aspect-ratio: 1; border-radius: 50%; background: #fff; }
+.cam__record { left: 50%; width: 20.2cqi; aspect-ratio: 1; background: rgb(44 44 46 / 0.6); box-shadow: inset 0 0 0 0.3cqi rgb(255 255 255 / 0.32); }
+.cam__record i { width: 45%; aspect-ratio: 1; border-radius: 1.9cqi; background: #ff3b30; transition: width 0.35s var(--ease), border-radius 0.35s var(--ease); }
+.cam__modes { left: 0; right: 0; top: 88.5%; bottom: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 8.6%; opacity: 0; }
+.cam__thumb { width: 12.1cqi; aspect-ratio: 1; border-radius: 50%; background: #3a3530 50% 40% / cover; box-shadow: inset 0 0 0 0.3cqi rgb(255 255 255 / 0.12); }
+.cam__switch { display: flex; padding: 0.7cqi; border-radius: 99px; background: rgb(255 255 255 / 0.07); font: 500 3.9cqi/1 var(--font); letter-spacing: 0.06em; }
+.cam__switch > * { padding: 3.2cqi 4.2cqi; border-radius: 99px; }
+.cam__switch b { background: #1c1c1e; color: #ffd60a; font-weight: 600; box-shadow: inset 0 0 0 0.25cqi rgb(255 255 255 / 0.08); }
+.cam__switch span { color: #fff; }
+.cam__flip { display: grid; place-items: center; width: 12.1cqi; aspect-ratio: 1; border-radius: 50%; background: #2c2c2e; color: #fff; }
+.cam__flip svg { width: 52%; height: 52%; }
+.cam::after {
+content: ""; position: absolute; inset: 0; z-index: 3;
+background: rgb(0 0 0 / 0.5);
+opacity: 0; transition: opacity 0.3s;
+pointer-events: none;
+}
+.cam.is-full::after { opacity: 1; }
+.cam.is-full .cam__timer, .cam.is-full .cam__pause, .cam.is-full .cam__photo { opacity: 0; }
+.cam.is-full .cam__format, .cam.is-full .cam__tools, .cam.is-full .cam__modes { opacity: 1; }
+.cam.is-full .cam__record i { width: 86%; border-radius: 50%; }
+.cam__alert {
+left: 9.5%; width: 81%; top: 39.1%; z-index: 4;
+padding: 6.2cqi 7.4cqi 3.8cqi;
+border-radius: 7cqi;
+background: #262628;
+box-shadow: inset 0 0 0 0.25cqi rgb(255 255 255 / 0.09), 0 4cqi 10cqi rgb(0 0 0 / 0.4);
+color: #fff;
+opacity: 0; transform: scale(1.1);
+transition: opacity 0.22s, transform 0.42s var(--spring);
+}
+.cam.is-full .cam__alert { opacity: 1; transform: none; }
+.cam__alert-title { font: 600 4.4cqi/1.2 var(--font); }
+.cam__alert-text { margin-top: 1.6cqi; color: rgb(235 235 245 / 0.62); font: 400 3.65cqi/1.36 var(--font); }
+.cam__alert-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 2.2cqi; margin: 5.4cqi -3.6cqi 0; }
+.cam__alert-buttons span { display: grid; place-items: center; height: 12.1cqi; border-radius: 99px; background: rgb(255 255 255 / 0.14); font: 500 4.3cqi/1 var(--font); }
+.cam__alert-buttons span + span { background: #139ff5; }
+.hud { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: #fff; }
+.hud__chip {
+position: absolute; left: var(--x); top: 10.635%;
+display: grid; place-content: center; justify-items: center;
+width: 10.91%; aspect-ratio: 1; border-radius: 50%;
+transform: translate(-50%, -50%);
+background: rgb(0 0 0 / 0.43);
+font: 700 4.3cqi/1 var(--font-mono);
+}
+.hud__chip b { font: 700 4.5cqi/1 var(--font-mono); }
+.hud__chip small { margin-top: 0.3cqi; color: rgb(255 255 255 / 0.62); font: 600 1.9cqi/1 var(--font); letter-spacing: 0.02em; }
+.hud__chip--word { font-size: 4.6cqi; }
+.hud__chip--buffer svg { width: 3.9cqi; height: 3.9cqi; }
+.hud__chip--buffer small { margin-top: 0.4cqi; color: #fff; font: 700 2.3cqi/1 var(--font); }
+.hud__gauge {
+position: absolute; left: 4.7%; width: 86.36%; top: 76.46%;
+display: flex; align-items: center; gap: 2.27cqi;
+transform: translateY(-50%);
+}
+.hud__seconds { flex: none; font: 600 3.3cqi/1 var(--font); font-variant-numeric: tabular-nums; }
+.hud__track {
+position: relative; flex: 1; height: 1.5cqi;
+border-radius: 1cqi; overflow: hidden;
+background: rgb(255 255 255 / 0.22);
+}
+.hud__track i { display: block; width: 100%; height: 100%; border-radius: inherit; background: var(--accent); transform: translateX(-100%); will-change: transform; }
+.hud__track--full i { transform: none; will-change: auto; }
+.hud__shade, .hud__touch, .hud .shutter-ring { position: absolute; left: 50%; top: 89%; border-radius: 50%; transform: translate(-50%, -50%); opacity: 0; }
+.hud__shade { width: 14.5%; aspect-ratio: 1; background: rgb(0 0 0 / 0.3); }
+.hud__touch { width: 13%; aspect-ratio: 1; background: rgb(255 255 255 / 0.55); box-shadow: 0 0 0 0.6cqi rgb(255 255 255 / 0.25); }
+.hud .shutter-ring { width: 19.5%; aspect-ratio: 1; box-shadow: 0 0 0 0.9cqi var(--accent), 0 0 6cqi var(--accent); }
+.storage {
+width: calc(var(--pw) * 1.36); padding: 16px 16px 14px;
+border-radius: 20px; background: #1c1c1e;
+contain: layout paint;
+container-type: inline-size;
+}
+.storage__head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 12px; color: #8e8e93; font-size: clamp(12px, 4.4cqi, 15px); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.storage__head > span:first-child { color: #fff; font-size: clamp(14px, 5.2cqi, 18px); font-weight: 500; }
+.storage__head b { font-weight: 400; }
+.storage__bar { display: flex; height: clamp(14px, 5.6cqi, 20px); overflow: hidden; border-radius: 5px; background: #000; }
+.storage__seg, .storage__rest { flex: 0 0 calc(var(--gb) / 256 * 100%); }
+.storage__seg { box-shadow: inset -1.5px 0 0 #000; }
+.storage__rest { display: flex; }
+.storage__rest .storage__seg { flex-basis: calc(var(--gb) / var(--rest-gb, 41.4) * 100%); }
+.storage__seg--photos, [data-storage-rest] { transform-origin: left; will-change: transform; }
+.storage__legend { display: flex; flex-wrap: nowrap; justify-content: space-between; margin-top: 11px; color: #fff; font-size: clamp(8px, 3cqi, 12px); white-space: nowrap; }
+.storage__key { display: inline-flex; align-items: center; gap: 0.4em; }
+.storage__key::before { content: ""; width: 0.72em; height: 0.72em; border-radius: 50%; background: var(--c); }
+.storage__seg--photos, .storage__key--photos { --c: #ff453a; background: var(--c); }
+.storage__seg--apps, .storage__key--apps { --c: #ff9f0a; background: var(--c); }
+.storage__seg--music, .storage__key--music { --c: #ffd60a; background: var(--c); }
+.storage__seg--mail, .storage__key--mail { --c: #30d158; background: var(--c); }
+.storage__seg--ios, .storage__key--ios { --c: #636366; background: var(--c); }
+.storage__seg--system, .storage__key--system { --c: #48484a; background: var(--c); }
+.storage__key { background: none; }
+@media (max-width: 700px) {
+.storage { width: 100%; }
+.storage::before { content: attr(data-owner); display: block; margin-bottom: 10px; color: var(--muted); font-size: 12px; font-weight: 600; }
+}
+.match__end { display: grid; justify-items: center; gap: 22px; margin-top: clamp(40px, 6vw, 70px); }
+.match__replay[hidden] { display: none; }
+  </style>
+  <style>.tape__film, .tape__clip-film { background-image: url("../assets/img/strips/dance.jpg"); background-image: image-set(url("../assets/img/strips/dance.webp") type("image/webp"), url("../assets/img/strips/dance.jpg") type("image/jpeg")); }</style>
+  <!-- Everything features.css styles is below the hero, so the first paint
+       doesn't wait for it. -->
+  <link rel="preload" href="../assets/css/features.css" as="style" onload="this.onload = null; this.rel = 'stylesheet'">
+  <noscript><link rel="stylesheet" href="../assets/css/features.css"></noscript>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a.8.8 0 0 0 1.2.7l10.4-6.5a.8.8 0 0 0 0-1.4L9.2 4.8A.8.8 0 0 0 8 5.5Z" fill="currentColor"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m6.5 12.5 3.6 3.6 7.4-8.2" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-volume" viewBox="0 0 32 32"><rect x="9" y="3" width="15" height="26" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4.5" y="8.5" width="3" height="5.5" rx="1.5" fill="currentColor"/><rect x="4.5" y="16" width="3" height="5.5" rx="1.5" fill="currentColor"/></symbol>
+      <symbol id="i-camera-control" viewBox="0 0 32 32"><rect x="8" y="3" width="15" height="26" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><rect x="24.5" y="17" width="3" height="7" rx="1.5" fill="currentColor"/><circle cx="15.5" cy="10" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+      <symbol id="i-remote" viewBox="0 0 32 32"><rect x="10" y="3" width="12" height="26" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="16" cy="11" r="3.2" fill="currentColor"/><path d="M16 19.5v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+      <symbol id="i-keyboard" viewBox="0 0 32 32"><rect x="3" y="8" width="26" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 13h.01M12 13h.01M16 13h.01M20 13h.01M24 13h.01M10 19h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+      <symbol id="i-controller" viewBox="0 0 32 32"><path d="M9.5 10h13a5.5 5.5 0 0 1 5.4 6.4l-.8 4.6a3 3 0 0 1-5.2 1.5L19.5 20h-7l-2.4 2.5a3 3 0 0 1-5.2-1.5l-.8-4.6A5.5 5.5 0 0 1 9.5 10Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10.5 13.5v4M8.5 15.5h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="21" cy="14.5" r="1.3" fill="currentColor"/><circle cx="23.5" cy="17" r="1.3" fill="currentColor"/></symbol>
+      <symbol id="i-watch" viewBox="0 0 32 32"><rect x="8" y="7.5" width="16" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M11 7.5 12 3h8l1 4.5M11 24.5l1 4.5h8l1-4.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="16" r="3" fill="currentColor"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 48 48"><rect x="10" y="21" width="28" height="21" rx="5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M16 21v-5a8 8 0 0 1 16 0v5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="31" r="2.6" fill="currentColor"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+      <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.25" fill="currentColor"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="nav" data-nav>
+    <div class="nav__inner">
+      <a class="nav__brand" href="../" aria-label="AfterClip home">
+        <picture><source srcset="../assets/img/icon-32.avif 1x, ../assets/img/icon-64.avif 2x" type="image/avif"><img src="../assets/img/icon-32.png" srcset="../assets/img/icon-32.png 1x, ../assets/img/icon-64.png 2x" width="24" height="24" alt=""></picture>
+        <span>AfterClip</span>
+      </a>
+      <nav class="nav__links" aria-label="Sections">
+        <a href="#how" data-nav-link>How it works</a>
+        <a href="#camera" data-nav-link>Camera</a>
+        <a href="#watch" data-nav-link>Watch</a>
+        <a href="#buttons" data-nav-link>Buttons</a>
+        <a href="#faq" data-nav-link>FAQ</a>
+      </nav>
+      <a class="btn btn--sm" href="https://www.instagram.com/afterclipapp/">Follow</a>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ───────── Hero: the app, running ───────── -->
+    <section class="hero" id="top" data-hero aria-labelledby="hero-title">
+      <div class="hero__stage" data-hero-stage>
+        <div class="hero__copy">
+          <p class="eyebrow"><span class="rec-dot" aria-hidden="true"></span>AfterClip for dance</p>
+          <h1 class="hero__title" id="hero-title">
+            <span class="line"><span>Save the freeze</span></span>
+            <span class="line"><span>after the drop.</span></span>
+          </h1>
+          <p class="hero__lede">Hold your iPhone at the edge of the circle. AfterClip keeps the last seconds of video and sound, so after the move that brings the crowd in, one tap keeps it, on the beat.</p>
+          <div class="hero__ctas">
+            <a class="btn btn--lg" href="https://www.instagram.com/afterclipapp/" rel="me"><svg class="ico" aria-hidden="true"><use href="#i-instagram"/></svg>Follow on Instagram</a>
+            <button class="btn btn--ghost btn--lg" type="button" data-film-open>
+              <svg class="ico" aria-hidden="true"><use href="#i-play"/></svg>
+              Watch the film <span class="btn__meta">0:22</span>
+            </button>
+          </div>
+          <!-- Until the app is out: where the App Store button will be (AppStore/README.md, "Launch day"). -->
+          <p class="hero__soon"><span class="hero__soon-dot" aria-hidden="true"></span>Coming soon to the App Store</p>
+        </div>
+
+        <div class="hero__device" data-hero-device>
+          <div class="iphone" data-iphone>
+            <div class="iphone__screen" data-screen>
+              <video class="iphone__video" data-hero-video data-src="../assets/video/dance.mp4" poster="../assets/video/dance-poster.avif"
+                     muted loop playsinline preload="none" aria-hidden="true"></video>
+              <!-- The same screen as AfterClip's in the duel below: its UI, with the
+                   settings and the buffer drawn on top. -->
+              <picture class="iphone__hud" data-hud>
+                <source srcset="../assets/img/hud-match-480.webp 480w, ../assets/img/hud-match-600.webp 600w, ../assets/img/hud-match.webp 880w" sizes="(max-width: 599px) 62vw, (max-width: 899px) 40vw, 400px" type="image/webp">
+                <img src="../assets/img/hud-match-600.png" srcset="../assets/img/hud-match-480.png 480w, ../assets/img/hud-match-600.png 600w, ../assets/img/hud-match.png 880w" sizes="(max-width: 599px) 62vw, (max-width: 899px) 40vw, 400px" width="880" height="1912" alt="">
+              </picture>
+              <div class="hud" aria-hidden="true">
+                <span class="hud__chip hud__chip--word" style="--x: 9.015%">4K</span>
+                <span class="hud__chip" style="--x: 36.29%"><b>60</b><small>FPS</small></span>
+                <span class="hud__chip hud__chip--buffer" style="--x: 63.56%"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 12a8.4 8.4 0 1 0 2.5-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M5.2 2.8 5.6 6.6 9.4 6.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7.6V12l3 1.8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><small>1:00</small></span>
+                <span class="hud__gauge"><span class="hud__seconds">1:00</span><span class="hud__track hud__track--full"><i></i></span></span>
+              </div>
+              <div class="toasts" data-phone-toasts></div>
+              <span class="shutter-ring" data-shutter-ring aria-hidden="true"></span>
+              <button class="shutter-hit" type="button" data-shutter aria-label="Save the last 15 seconds"></button>
+            </div>
+            <picture class="iphone__frame">
+              <source srcset="../assets/img/frame-iphone-480.webp 480w, ../assets/img/frame-iphone-600.webp 600w, ../assets/img/frame-iphone.webp 978w" sizes="(max-width: 599px) 62vw, (max-width: 899px) 40vw, 400px" type="image/webp">
+              <img src="../assets/img/frame-iphone-600.png" srcset="../assets/img/frame-iphone-480.png 480w, ../assets/img/frame-iphone-600.png 600w, ../assets/img/frame-iphone.png 978w" sizes="(max-width: 599px) 62vw, (max-width: 899px) 40vw, 400px" width="978" height="2000"
+                   fetchpriority="high" alt="AfterClip on iPhone: a live camera view of a breakdancer hitting a freeze in the middle of a street cypher, with the save shutter set to 15 seconds.">
+            </picture>
+          </div>
+          <p class="hero__hint" data-hero-hint>Tap the shutter. Or press any key.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── The idea, lit word by word ───────── -->
+    <section class="manifesto" id="story" aria-label="The idea">
+      <p class="manifesto__text" data-words>
+        The freeze lands on the last beat, the circle erupts, and your phone is still in your pocket. Film every round and your iPhone fills up before the final. <strong>AfterClip is already rolling.</strong> Watch, and when it lands, tap Save.
+      </p>
+    </section>
+
+    <!-- ───────── Why not film everything? Two phones, one penalty ───────── -->
+    <section class="match section" id="match" aria-labelledby="match-title" data-match data-recorded="10780">
+      <div class="wrap">
+        <header class="section__head section__head--center">
+          <p class="eyebrow">Why not just film everything?</p>
+          <h2 class="title" id="match-title" data-wipe>Every round filmed.<br>Not the freeze.</h2>
+          <p class="body" data-reveal>At 4K and 60 fps, a minute of video takes about 440 MB, so a three-hour battle takes about 79 GB. If your iPhone hasn't got that much free, it stops recording just before the final.</p>
+        </header>
+
+        <p class="visually-hidden">Side by side, the same freeze in a street cypher. The phone filming every round runs out of storage just before the freeze and stops recording. AfterClip, keeping only the last minute, saves it.</p>
+        <div class="duel" aria-hidden="true">
+          <figure class="duel__side duel__side--camera">
+            <figcaption class="duel__label">Filming everything</figcaption>
+            <div class="iphone">
+              <div class="iphone__screen cam" data-cam>
+                <!-- The same clip as AfterClip's beside it, drawn from its frames: the two never drift apart. -->
+                <canvas class="cam__feed" data-match-mirror data-poster="../assets/video/dance-poster.jpg" aria-hidden="true"></canvas>
+                <span class="cam__format"><b>4K</b><small>RES</small><b>60</b><small>FPS</small></span>
+                <span class="cam__tools"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2.5 5.5 13.2h5.3L10 21.5l7.5-10.7h-5.3Z" fill="currentColor"/><path d="M4 3.5 20 20.5" stroke="#1c1c1e" stroke-width="3.2" stroke-linecap="round"/><path d="M4 3.5 20 20.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor"><circle cx="5" cy="9" r="2.1"/><circle cx="12" cy="9" r="2.1"/><circle cx="19" cy="9" r="2.1"/><circle cx="5" cy="15.5" r="2.1"/><circle cx="12" cy="15.5" r="2.1"/><circle cx="19" cy="15.5" r="2.1"/></g></svg></span>
+                <span class="cam__timer" data-match-clock>02:59:40</span>
+                <span class="cam__zoom"><span>.5</span><span class="is-on">1×</span><span>2</span><span>3</span></span>
+                <span class="cam__pause"><i></i><i></i></span>
+                <span class="cam__record"><i></i></span>
+                <span class="cam__photo"></span>
+                <span class="cam__modes"><span class="cam__thumb"></span><span class="cam__switch"><b>VIDEO</b><span>PHOTO</span></span><span class="cam__flip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 9.5A8 8 0 0 0 5.2 7.6M4.5 14.5a8 8 0 0 0 14.3 1.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M5 3.8v4h4M19 20.2v-4h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+                <div class="cam__alert" data-match-alert>
+                  <p class="cam__alert-title">iPhone Storage Full</p>
+                  <p class="cam__alert-text">You do not have enough storage to record video. Free up space by deleting unneeded apps, videos, or music.</p>
+                  <p class="cam__alert-buttons"><span>Not Now</span><span>Manage</span></p>
+                </div>
+              </div>
+              <picture class="iphone__frame">
+                <source srcset="../assets/img/frame-iphone-480.webp 480w, ../assets/img/frame-iphone-600.webp 600w, ../assets/img/frame-iphone.webp 978w" sizes="(max-width: 899px) 42vw, 290px" type="image/webp">
+                <img src="../assets/img/frame-iphone-600.png" srcset="../assets/img/frame-iphone-480.png 480w, ../assets/img/frame-iphone-600.png 600w, ../assets/img/frame-iphone.png 978w" sizes="(max-width: 899px) 42vw, 290px" width="978" height="2000" loading="lazy" decoding="async" alt="">
+              </picture>
+            </div>
+            <p class="duel__note"><b>Every round</b> · about 79 GB at 4K, 60 fps</p>
+            <div class="storage" data-storage data-owner="Filming everything">
+              <p class="storage__head"><span>iPhone</span><span><b data-storage-used>255.94 GB</b> of 256 GB used</span></p>
+              <div class="storage__bar">
+                <i class="storage__seg storage__seg--photos" style="--gb: 214.54" data-storage-photos></i><span class="storage__rest" style="--gb: 41.4" data-storage-rest><i class="storage__seg storage__seg--apps" style="--gb: 18"></i><i class="storage__seg storage__seg--music" style="--gb: 2.4"></i><i class="storage__seg storage__seg--mail" style="--gb: 0.6"></i><i class="storage__seg storage__seg--ios" style="--gb: 12.5"></i><i class="storage__seg storage__seg--system" style="--gb: 7.9"></i></span>
+              </div>
+              <ul class="storage__legend"><li class="storage__key storage__key--photos">Photos</li><li class="storage__key storage__key--apps">Applications</li><li class="storage__key storage__key--music">Music</li><li class="storage__key storage__key--mail">Mail</li><li class="storage__key storage__key--ios">iOS</li><li class="storage__key storage__key--system">System Data</li></ul>
+            </div>
+          </figure>
+
+          <figure class="duel__side duel__side--afterclip">
+            <figcaption class="duel__label">AfterClip</figcaption>
+            <div class="iphone">
+              <div class="iphone__screen">
+                <video class="iphone__video" data-match-video="afterclip" data-src="../assets/video/dance.mp4" data-poster="../assets/video/dance-poster.jpg"
+                       muted playsinline preload="none"></video>
+                <picture class="iphone__hud">
+                  <source srcset="../assets/img/hud-match-480.webp 480w, ../assets/img/hud-match-600.webp 600w, ../assets/img/hud-match.webp 880w" sizes="(max-width: 899px) 42vw, 290px" type="image/webp">
+                  <img src="../assets/img/hud-match-600.png" srcset="../assets/img/hud-match-480.png 480w, ../assets/img/hud-match-600.png 600w, ../assets/img/hud-match.png 880w" sizes="(max-width: 899px) 42vw, 290px" width="880" height="1912" loading="lazy" decoding="async" alt="">
+                </picture>
+                <div class="hud">
+                  <span class="hud__chip hud__chip--word" style="--x: 9.015%">4K</span>
+                  <span class="hud__chip" style="--x: 36.29%"><b>60</b><small>FPS</small></span>
+                  <span class="hud__chip hud__chip--buffer" style="--x: 63.56%"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.6 12a8.4 8.4 0 1 0 2.5-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M5.2 2.8 5.6 6.6 9.4 6.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7.6V12l3 1.8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><small>1:00</small></span>
+                  <span class="hud__gauge"><span class="hud__seconds" data-hud-seconds>0s</span><span class="hud__track"><i data-hud-fill></i></span></span>
+                  <span class="hud__shade" data-hud-shade></span>
+                  <span class="hud__touch" data-hud-touch></span>
+                  <span class="shutter-ring" data-hud-ring></span>
+                </div>
+                <div class="toasts" data-match-toasts></div>
+              </div>
+              <picture class="iphone__frame">
+                <source srcset="../assets/img/frame-iphone-480.webp 480w, ../assets/img/frame-iphone-600.webp 600w, ../assets/img/frame-iphone.webp 978w" sizes="(max-width: 899px) 42vw, 290px" type="image/webp">
+                <img src="../assets/img/frame-iphone-600.png" srcset="../assets/img/frame-iphone-480.png 480w, ../assets/img/frame-iphone-600.png 600w, ../assets/img/frame-iphone.png 978w" sizes="(max-width: 899px) 42vw, 290px" width="978" height="2000" loading="lazy" decoding="async" alt="">
+              </picture>
+            </div>
+            <p class="duel__note"><b>1-minute buffer</b> · about 440 MB at 4K, 60 fps</p>
+            <div class="storage" data-owner="AfterClip">
+              <p class="storage__head"><span>iPhone</span><span><b>49.41 GB</b> of 256 GB used</span></p>
+              <div class="storage__bar">
+                <i class="storage__seg storage__seg--photos" style="--gb: 8.01"></i><span class="storage__rest" style="--gb: 41.4"><i class="storage__seg storage__seg--apps" style="--gb: 18"></i><i class="storage__seg storage__seg--music" style="--gb: 2.4"></i><i class="storage__seg storage__seg--mail" style="--gb: 0.6"></i><i class="storage__seg storage__seg--ios" style="--gb: 12.5"></i><i class="storage__seg storage__seg--system" style="--gb: 7.9"></i></span>
+              </div>
+              <ul class="storage__legend"><li class="storage__key storage__key--photos">Photos</li><li class="storage__key storage__key--apps">Applications</li><li class="storage__key storage__key--music">Music</li><li class="storage__key storage__key--mail">Mail</li><li class="storage__key storage__key--ios">iOS</li><li class="storage__key storage__key--system">System Data</li></ul>
+            </div>
+          </figure>
+        </div>
+
+        <div class="match__end">
+          <p class="body body--center" data-reveal>AfterClip keeps only the last minute, so the space it needs never grows. Watch, and tap Save when it lands.</p>
+          <button class="btn btn--ghost match__replay" type="button" data-match-replay hidden>Play it again</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Set up for dance ───────── -->
+    <section class="setup section" id="setup" aria-labelledby="setup-title">
+      <div class="wrap">
+        <header class="section__head">
+          <p class="eyebrow">Set up for dance</p>
+          <h2 class="title" id="setup-title" data-wipe>Edge of the circle.<br>Head to toe.</h2>
+          <p class="body" data-reveal>From the front row of the circle you get the whole dancer and the crowd reacting. Hold the iPhone there, or stand it on a small tripod.</p>
+        </header>
+        <ul class="setup__chips" aria-label="Settings to start with" data-reveal>
+          <li><small>Buffer</small><b>1:00</b><span>10 s to 30 min</span></li>
+          <li><small>Frame rate</small><b>60 fps</b><span>1 to 240 fps</span></li>
+          <li><small>Resolution</small><b>4K</b><span>720p to 4K</span></li>
+          <li><small>Lens</small><b>0.5×</b><span>Ultra wide to telephoto</span></li>
+          <li><small>Save with</small><b>Apple Watch</b><span>Or any button you assign</span></li>
+        </ul>
+        <p class="setup__note" data-reveal><strong>Starting points, not limits.</strong> Set the buffer, frame rate, resolution, bitrate and lens yourself, and save with your Apple Watch, a Bluetooth remote, the volume buttons, Camera Control, a keyboard or a game controller. The camera runs exactly as you set it. 4K, 240 fps and the telephoto lens depend on your iPhone.</p>
+        <ul class="details">
+          <li data-reveal>
+            <h3>Front row, wide.</h3>
+            <p>At the edge of the circle, the 0.5× lens fits the whole dancer, head to toe, and the crowd reacting behind.</p>
+          </li>
+          <li data-reveal>
+            <h3>Your setup, one tap away.</h3>
+            <p>Save the battle setup as a preset, 4K at 60 fps, the 0.5× lens and a one-minute buffer, and switch to it in one tap when the circle forms.</p>
+          </li>
+          <li data-reveal>
+            <h3>Rehearsals too.</h3>
+            <p>In the studio, leave the iPhone running through the run-through and save the take that felt right, with a remote or your Apple Watch.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ───────── How it works: scroll is time ───────── -->
+    <section class="how" id="how" data-how aria-labelledby="how-title">
+      <div class="how__stage">
+        <div class="how__head wrap">
+          <p class="eyebrow">How it works</p>
+          <h2 class="visually-hidden" id="how-title">How AfterClip works</h2>
+          <ol class="how__steps">
+            <li class="how__step is-on" data-step>
+              <h3>Always rolling.</h3>
+              <p>While it's open, AfterClip keeps the last seconds of video and sound. Older seconds make way for new ones, so it never fills up.</p>
+            </li>
+            <li class="how__step" data-step>
+              <h3>Something happens.</h3>
+              <p>The jump. The first step. The trick you'll never land twice. It's already in the buffer.</p>
+            </li>
+            <li class="how__step" data-step>
+              <h3>Tap Save, after.</h3>
+              <p>AfterClip keeps the seconds before your tap and puts them straight into Photos.</p>
+            </li>
+          </ol>
+          <div class="how__dots" aria-hidden="true"><i class="is-on" data-dot></i><i data-dot></i><i data-dot></i></div>
+        </div>
+
+        <div class="tape" data-tape aria-hidden="true">
+          <div class="tape__rec" data-tape-rec>
+            <div class="tape__film" data-tape-film>
+              <span class="tape__moment" data-tape-moment><b><i>✦</i><span>The moment</span></b></span>
+            </div>
+          </div>
+          <div class="tape__window" data-tape-window><span>The last 15 seconds</span></div>
+          <span class="tape__over">Overwritten</span>
+          <div class="tape__now"><span><i></i>Now</span></div>
+          <div class="tape__clip" data-tape-clip>
+            <div class="tape__clip-card"><div class="tape__clip-film" data-tape-clip-film></div></div>
+            <span class="tape__clip-label"><svg class="ico"><use href="#i-check"/></svg>Saved 15s · in Photos</span>
+          </div>
+          <span class="tape__shutter" data-tape-shutter>15</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── The buffer: a ring that's always being rewritten ───────── -->
+    <section class="rewind section" id="rewind" aria-labelledby="rewind-title">
+      <div class="wrap split">
+        <div class="split__copy">
+          <p class="eyebrow">The buffer</p>
+          <h2 class="title" id="rewind-title" data-wipe>Rewind up to<br>30 minutes.</h2>
+          <p class="body" data-reveal>Choose how far back AfterClip remembers, from ten seconds to half an hour, and save clips of any length. A whole set, a match or a recital is never more than a tap away.</p>
+        </div>
+        <div class="ring-demo" data-ring data-reveal>
+          <div class="ring">
+            <div class="ring__spin" data-ring-spin aria-hidden="true"><span class="ring__trail"></span><span class="ring__head"></span></div>
+            <p class="ring__readout">
+              <output data-ring-value for="buffer-dial">1</output>
+              <span data-ring-unit>minute back</span>
+            </p>
+          </div>
+          <p class="ring__note" data-ring-note>About 70 MB of space, at 1080p and 30 fps.</p>
+          <div class="dial" id="buffer-dial" data-dial role="slider" tabindex="0"
+               aria-label="How far back AfterClip remembers" aria-valuemin="0" aria-valuemax="9" aria-valuenow="3" aria-valuetext="1 minute">
+            <div class="dial__window"><div class="dial__tape" data-dial-tape></div></div>
+            <span class="dial__pointer" aria-hidden="true"></span>
+          </div>
+          <p class="hint">Drag the dial, or use the arrow keys.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── The camera: real screens from the app, one per idea ───────── -->
+    <section class="camera section" id="camera" aria-labelledby="camera-title" data-specs>
+      <div class="wrap">
+        <header class="section__head">
+          <p class="eyebrow">The camera</p>
+          <h2 class="title" id="camera-title" data-wipe>A real camera.<br>Already rolling.</h2>
+          <p class="body" data-reveal>Every setting a serious camera app gives you, on the iPhones that capture it. And it has been recording the whole time.</p>
+        </header>
+
+        <div class="specs">
+          <div class="specs__device">
+            <div class="iphone">
+              <div class="iphone__screen">
+                <picture class="specs__shot is-on" data-shot>
+                  <source srcset="../assets/img/shot-capture.webp" type="image/webp">
+                  <img src="../assets/img/shot-capture.jpg" width="680" height="1478" loading="lazy" decoding="async" alt="AfterClip's Capture settings: lens, resolution, frame rate, bitrate, HDR and video stabilization.">
+                </picture>
+                <picture class="specs__shot" data-shot>
+                  <source srcset="../assets/img/shot-frame-rates.webp" type="image/webp">
+                  <img src="../assets/img/shot-frame-rates.jpg" width="680" height="1478" loading="lazy" decoding="async" alt="The Allow all frame rates page, listing 24 to 240 fps.">
+                </picture>
+                <picture class="specs__shot" data-shot>
+                  <source srcset="../assets/img/shot-stabilization.webp" type="image/webp">
+                  <img src="../assets/img/shot-stabilization.jpg" width="680" height="1478" loading="lazy" decoding="async" alt="The Video stabilization page: Off, Standard, Cinematic and Cinematic Extended.">
+                </picture>
+                <picture class="specs__shot" data-shot>
+                  <source srcset="../assets/img/shot-bitrate.webp" type="image/webp">
+                  <img src="../assets/img/shot-bitrate.jpg" width="680" height="1478" loading="lazy" decoding="async" alt="The Bitrate page: 45 Mbps, about 337 MB per minute.">
+                </picture>
+                <picture class="specs__shot" data-shot>
+                  <source srcset="../assets/img/shot-presets.webp" type="image/webp">
+                  <img src="../assets/img/shot-presets.jpg" width="680" height="1478" loading="lazy" decoding="async" alt="The Presets page: Basic, Cinema, Action and Slow-mo.">
+                </picture>
+                <picture class="specs__shot" data-shot>
+                  <source srcset="../assets/img/shot-tools.webp" type="image/webp">
+                  <img src="../assets/img/shot-tools.jpg" width="680" height="1478" loading="lazy" decoding="async" alt="The Customize capture tools page, showing how to add, replace and remove tools.">
+                </picture>
+              </div>
+              <picture class="iphone__frame">
+                <source srcset="../assets/img/frame-iphone-480.webp 480w, ../assets/img/frame-iphone-600.webp 600w, ../assets/img/frame-iphone.webp 978w" sizes="(max-width: 899px) 56vw, 380px" type="image/webp">
+                <img src="../assets/img/frame-iphone-600.png" srcset="../assets/img/frame-iphone-480.png 480w, ../assets/img/frame-iphone-600.png 600w, ../assets/img/frame-iphone.png 978w" sizes="(max-width: 899px) 56vw, 380px" width="978" height="2000" loading="lazy" decoding="async" alt="">
+              </picture>
+            </div>
+          </div>
+          <ol class="specs__list" data-specs-list>
+            <li class="spec is-on">
+              <p class="spec__kicker">Capture quality</p>
+              <h3>Up to 4K, with HDR.</h3>
+              <p>Pick the lens, the resolution, the frame rate and the bitrate, and turn HDR on. Everything a serious camera app gives you, and it never stops keeping the last seconds.</p>
+            </li>
+            <li class="spec">
+              <p class="spec__kicker">Frame rate</p>
+              <h3>Up to 240 frames a second.</h3>
+              <p>24 for a film look, 60 for sport, 120 or 240 for slow motion. You choose the rate, the resolution and the lens yourself, and the camera runs exactly as you set it.</p>
+            </li>
+            <li class="spec">
+              <p class="spec__kicker">Stabilization</p>
+              <h3>Steady, even when you aren't.</h3>
+              <p>Standard reacts instantly, which suits a replay buffer best. The cinematic modes are smoother still, for when you're walking, running or laughing.</p>
+            </li>
+            <li class="spec">
+              <p class="spec__kicker">Bitrate</p>
+              <h3>Detail, or space. Your call.</h3>
+              <p>Leave it on Auto, or choose how much data each second of video gets, and see what a minute of it will take before you change it.</p>
+            </li>
+            <li class="spec">
+              <p class="spec__kicker">Presets</p>
+              <h3>Your setups, one tap away.</h3>
+              <p>A preset remembers your capture quality, clip cleanup and accent. Switch between everyday, sports and low light in one tap, from your iPhone or your watch.</p>
+            </li>
+            <li class="spec">
+              <p class="spec__kicker">Tools</p>
+              <h3>Controls where you want them.</h3>
+              <p>Every round control on the capture screen is a tool you choose. Put the ones you use on screen, in your order, and hide the rest.</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Apple Watch ───────── -->
+    <section class="watch section" id="watch" aria-labelledby="watch-title">
+      <div class="watch__glow" aria-hidden="true"></div>
+      <div class="wrap split split--flip">
+        <div class="split__copy">
+          <p class="eyebrow">Apple Watch</p>
+          <h2 class="title" id="watch-title" data-wipe>Save from<br>your wrist.</h2>
+          <p class="body" data-reveal>Leave your iPhone on a tripod, a shelf or the dashboard. Your watch shows what it sees, live. Tap to focus, hold to lock focus and exposure, and save without walking back.</p>
+          <ul class="ticks" data-reveal>
+            <li>Live preview on your wrist</li>
+            <li>Tap to focus, hold for AE/AF lock</li>
+            <li>Turn the Digital Crown to zoom</li>
+            <li>Save, switch lens and change quality</li>
+          </ul>
+        </div>
+        <div class="watches" data-reveal>
+          <div class="awatch awatch--remote float float--slow">
+            <div class="awatch__screen">
+              <picture>
+                <source srcset="../assets/img/watch-remote.webp" type="image/webp">
+                <img src="../assets/img/watch-remote.png" width="416" height="496" loading="lazy" decoding="async"
+                     alt="The AfterClip watch app's remote: a big shutter set to 20 seconds, 45 seconds buffered, 80% iPhone battery and 48 GB of space.">
+              </picture>
+              <!-- The iPhone's live view in the corner: the other watch's clip, drawn from its frames. -->
+              <canvas class="awatch__preview" data-watch-preview aria-hidden="true"></canvas>
+              <picture class="awatch__saved" data-watch-saved aria-hidden="true">
+                <source srcset="../assets/img/watch-saved.webp" type="image/webp">
+                <img src="../assets/img/watch-saved.png" width="416" height="496" loading="lazy" decoding="async" alt="">
+              </picture>
+              <button class="awatch__shutter" type="button" data-watch-shutter aria-label="Save from the watch"></button>
+            </div>
+            <picture class="awatch__frame">
+              <source srcset="../assets/img/frame-watch.webp" type="image/webp">
+              <img src="../assets/img/frame-watch.png" width="560" height="880" loading="lazy" decoding="async" alt="">
+            </picture>
+          </div>
+
+          <div class="awatch awatch--live float">
+            <div class="awatch__screen" data-watch-view>
+              <div class="awatch__feed" data-watch-feed>
+                <video class="awatch__video" data-watch-video data-src="../assets/video/dance.mp4" data-poster="../assets/video/dance-poster.jpg"
+                       muted loop playsinline preload="none" aria-hidden="true"></video>
+              </div>
+              <picture class="awatch__ui" aria-hidden="true">
+                <source srcset="../assets/img/watch-viewfinder.webp" type="image/webp">
+                <img src="../assets/img/watch-viewfinder.png" width="416" height="496" loading="lazy" decoding="async" alt="">
+              </picture>
+              <span class="awatch__zoom" data-watch-zoom aria-hidden="true">1×</span>
+              <span class="focus-box" data-focus-box aria-hidden="true"></span>
+              <span class="lock-badge" data-lock-badge aria-hidden="true">AE/AF LOCK</span>
+              <button class="awatch__hit" type="button" data-watch-hit
+                      aria-label="Watch viewfinder. Press to focus; hold, or press Shift and Enter, to lock focus and exposure."></button>
+            </div>
+            <picture class="awatch__frame">
+              <source srcset="../assets/img/frame-watch.webp" type="image/webp">
+              <img src="../assets/img/frame-watch.png" width="560" height="880" loading="lazy" decoding="async"
+                   alt="AfterClip on Apple Watch, showing the iPhone camera's live view of a breakdancer hitting a freeze in the middle of a street cypher.">
+            </picture>
+            <span class="crown" data-crown role="slider" tabindex="0" aria-label="Digital Crown: zoom"
+                  aria-valuemin="1" aria-valuemax="2.4" aria-valuenow="1" aria-valuetext="1 times"></span>
+          </div>
+          <p class="hint watches__hint">Tap the watch to focus. Hold to lock. Drag the Crown to zoom.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Any button ───────── -->
+    <section class="buttons section" id="buttons" aria-labelledby="buttons-title" data-buttons>
+      <div class="wrap split">
+        <div class="split__copy">
+          <p class="eyebrow">Without looking</p>
+          <h2 class="title" id="buttons-title" data-wipe>Any button<br>is a shutter.</h2>
+          <p class="body" data-reveal>Press or hold a volume button. Squeeze Camera Control. Click a Bluetooth selfie remote, a keyboard key or a game controller. Map each one to save, switch lens, change quality and more, without looking at the screen.</p>
+          <div class="trykey" data-reveal>
+            <kbd class="keycap" data-keycap aria-hidden="true">K</kbd>
+            <p><strong>Try it now.</strong> Press any letter on your keyboard, or a button on a game controller. <span class="trykey__touch">Or tap a device.</span></p>
+            <label class="switch trykey__switch">
+              <input type="checkbox" data-keys-toggle checked>
+              <span class="switch__track" aria-hidden="true"></span>
+              <span class="switch__label">Keys save</span>
+            </label>
+          </div>
+        </div>
+        <div class="inputs" data-reveal>
+          <div class="iphone iphone--still float float--slow">
+            <div class="iphone__screen">
+              <picture>
+                <source srcset="../assets/img/screen-buttons.webp" type="image/webp">
+                <img src="../assets/img/screen-buttons.jpg" width="660" height="1434" loading="lazy" decoding="async"
+                     alt="AfterClip's Buttons settings: a hold on Volume Down saves a replay, a press on Volume Up switches the lens.">
+              </picture>
+            </div>
+            <picture class="iphone__frame">
+              <source srcset="../assets/img/frame-iphone-480.webp 480w, ../assets/img/frame-iphone-600.webp 600w, ../assets/img/frame-iphone.webp 978w" sizes="(max-width: 899px) 220px, 290px" type="image/webp">
+              <img src="../assets/img/frame-iphone-600.png" srcset="../assets/img/frame-iphone-480.png 480w, ../assets/img/frame-iphone-600.png 600w, ../assets/img/frame-iphone.png 978w" sizes="(max-width: 899px) 220px, 290px" width="978" height="2000" loading="lazy" decoding="async" alt="">
+            </picture>
+          </div>
+          <ul class="devices" aria-label="Buttons AfterClip can use">
+            <li><button type="button" class="device" data-device="volume"><svg class="ico"><use href="#i-volume"/></svg><span>Volume buttons</span></button></li>
+            <li><button type="button" class="device" data-device="camera"><svg class="ico"><use href="#i-camera-control"/></svg><span>Camera Control</span></button></li>
+            <li><button type="button" class="device" data-device="remote"><svg class="ico"><use href="#i-remote"/></svg><span>Bluetooth remote</span></button></li>
+            <li><button type="button" class="device" data-device="keyboard"><svg class="ico"><use href="#i-keyboard"/></svg><span>Keyboard</span></button></li>
+            <li><button type="button" class="device" data-device="controller"><svg class="ico"><use href="#i-controller"/></svg><span>Game controller</span></button></li>
+            <li><button type="button" class="device" data-device="watch"><svg class="ico"><use href="#i-watch"/></svg><span>Apple Watch</span></button></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Saves that join ───────── -->
+    <section class="joins section" id="joins" aria-labelledby="joins-title" data-joins>
+      <div class="wrap">
+        <header class="section__head section__head--center">
+          <p class="eyebrow">Clips</p>
+          <h2 class="title" id="joins-title" data-wipe>One moment.<br>One clip.</h2>
+          <p class="body" data-reveal>Saved a second too early? Tap Save again. The clips join into one, with no footage saved twice.</p>
+        </header>
+        <div class="merge" aria-hidden="true">
+          <div class="merge__scale"><span style="--at: 0">−15 s</span><span style="--at: 5">−10 s</span><span style="--at: 10">−5 s</span><span style="--at: 15">Tap</span><span style="--at: 17">Tap again</span></div>
+          <div class="merge__lanes" data-merge>
+            <div class="merge__goo">
+              <span class="merge__bar merge__bar--a" data-merge-a></span>
+              <span class="merge__bar merge__bar--b" data-merge-b></span>
+            </div>
+            <span class="merge__label merge__label--a" data-merge-la>Saved 15s</span>
+            <span class="merge__label merge__label--b" data-merge-lb>Saved 15s</span>
+            <span class="merge__label merge__label--one" data-merge-one><svg class="ico"><use href="#i-check"/></svg>One clip · 17s</span>
+            <span class="merge__moment">✦</span>
+          </div>
+        </div>
+        <ul class="details">
+          <li data-reveal>
+            <h3>A library that stays tidy.</h3>
+            <p>Clips that a newer clip already contains are removed for you. iOS asks first, every time.</p>
+          </li>
+          <li data-reveal>
+            <h3>Close it. Nothing's lost.</h3>
+            <p>Reopen AfterClip and the footage it was holding is still there to save.</p>
+          </li>
+          <li data-reveal>
+            <h3>Ready before you unlock.</h3>
+            <p>Open AfterClip from the Lock Screen, Control Center or the Action button, and it's already keeping the seconds.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ───────── Privacy: the page turns to daylight ───────── -->
+    <section class="privacy section" id="privacy" aria-labelledby="privacy-title">
+      <div class="wrap">
+        <div class="privacy__lock" aria-hidden="true"><svg><use href="#i-lock"/></svg></div>
+        <h2 class="title title--center" id="privacy-title" data-wipe>Nothing leaves<br>your iPhone.</h2>
+        <p class="body body--center" data-reveal>No account. No analytics. No ads. AfterClip collects no data, and your footage stays on your devices.</p>
+        <dl class="zeros">
+          <div data-reveal><dt>Accounts to make</dt><dd data-count>0</dd></div>
+          <div data-reveal><dt>Trackers</dt><dd data-count>0</dd></div>
+          <div data-reveal><dt>Seconds uploaded</dt><dd data-count>0</dd></div>
+        </dl>
+        <div class="label-card" data-reveal>
+          <p class="label-card__title">App Privacy</p>
+          <div class="label-card__row">
+            <span class="label-card__icon" aria-hidden="true"><svg><use href="#i-check"/></svg></span>
+            <div>
+              <p class="label-card__head">Data Not Collected</p>
+              <p class="label-card__text">The developer does not collect any data from this app.</p>
+            </div>
+          </div>
+        </div>
+        <p class="body--center"><a class="arrow-link" href="../privacy.html">Read the privacy policy<svg class="ico"><use href="#i-arrow"/></svg></a></p>
+      </div>
+    </section>
+
+    <!-- ───────── Every sport ───────── -->
+    <section class="sports section" id="sports" aria-labelledby="sports-title">
+      <div class="wrap">
+        <header class="section__head section__head--center">
+          <p class="eyebrow">Not just dance</p>
+          <h2 class="title" id="sports-title" data-wipe>Every sport has<br>its moment.</h2>
+          <p class="body" data-reveal>AfterClip works the same way whatever you play. Here's how to set it up for the rest.</p>
+        </header>
+        <ul class="sports__grid" style="--rows-of: 5">
+          <li>
+            <a class="sport-card" href="../kids/">
+              <picture>
+                <source srcset="../assets/img/sports/kids.avif" type="image/avif">
+                <img src="../assets/img/sports/kids.jpg" width="320" height="568" loading="lazy" decoding="async" alt="">
+              </picture>
+              <span class="sport-card__text"><span class="sport-card__name">Kids & family</span><span class="sport-card__line">The firsts that don't come twice.</span></span>
+            </a>
+          </li>
+          <li>
+            <a class="sport-card" href="../pets/">
+              <picture>
+                <source srcset="../assets/img/sports/pets.avif" type="image/avif">
+                <img src="../assets/img/sports/pets.jpg" width="320" height="568" loading="lazy" decoding="async" alt="">
+              </picture>
+              <span class="sport-card__text"><span class="sport-card__name">Pets</span><span class="sport-card__line">The trick they won't do twice.</span></span>
+            </a>
+          </li>
+          <li>
+            <a class="sport-card" href="../skateboarding/">
+              <picture>
+                <source srcset="../assets/img/sports/skateboarding.avif" type="image/avif">
+                <img src="../assets/img/sports/skateboarding.jpg" width="320" height="568" loading="lazy" decoding="async" alt="">
+              </picture>
+              <span class="sport-card__text"><span class="sport-card__name">Skateboarding</span><span class="sport-card__line">The drop-in you finally made.</span></span>
+            </a>
+          </li>
+          <li>
+            <a class="sport-card" href="../parkour/">
+              <picture>
+                <source srcset="../assets/img/sports/parkour.avif" type="image/avif">
+                <img src="../assets/img/sports/parkour.jpg" width="320" height="568" loading="lazy" decoding="async" alt="">
+              </picture>
+              <span class="sport-card__text"><span class="sport-card__name">Parkour</span><span class="sport-card__line">The jump you'll never repeat.</span></span>
+            </a>
+          </li>
+          <li>
+            <a class="sport-card" href="../surfing/">
+              <picture>
+                <source srcset="../assets/img/sports/surfing.avif" type="image/avif">
+                <img src="../assets/img/sports/surfing.jpg" width="320" height="568" loading="lazy" decoding="async" alt="">
+              </picture>
+              <span class="sport-card__text"><span class="sport-card__name">Surfing</span><span class="sport-card__line">The wave of the day.</span></span>
+            </a>
+          </li>
+          <li>
+            <a class="sport-card" href="../ski/">
+              <picture>
+                <source srcset="../assets/img/sports/ski.avif" type="image/avif">
+                <img src="../assets/img/sports/ski.jpg" width="320" height="568" loading="lazy" decoding="async" alt="">
+              </picture>
+              <span class="sport-card__text"><span class="sport-card__name">Ski & snowboard</span><span class="sport-card__line">The turn they finally linked.</span></span>
+            </a>
+          </li>
+          <li>
+            <a class="sport-card" href="../climbing/">
+              <picture>
+                <source srcset="../assets/img/sports/climbing.avif" type="image/avif">
+                <img src="../assets/img/sports/climbing.jpg" width="320" height="568" loading="lazy" decoding="async" alt="">
+              </picture>
+              <span class="sport-card__text"><span class="sport-card__name">Climbing</span><span class="sport-card__line">The race to the top.</span></span>
+            </a>
+          </li>
+          <li>
+            <a class="sport-card" href="../golf/">
+              <picture>
+                <source srcset="../assets/img/sports/golf.avif" type="image/avif">
+                <img src="../assets/img/sports/golf.jpg" width="320" height="568" loading="lazy" decoding="async" alt="">
+              </picture>
+              <span class="sport-card__text"><span class="sport-card__name">Golf</span><span class="sport-card__line">The shot you'll talk about.</span></span>
+            </a>
+          </li>
+          <li>
+            <a class="sport-card" href="../motorcycle/">
+              <picture>
+                <source srcset="../assets/img/sports/motorcycle.avif" type="image/avif">
+                <img src="../assets/img/sports/motorcycle.jpg" width="320" height="568" loading="lazy" decoding="async" alt="">
+              </picture>
+              <span class="sport-card__text"><span class="sport-card__name">Motorcycles</span><span class="sport-card__line">The wheelie you'll want to watch back.</span></span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ───────── FAQ ───────── -->
+    <section class="faq section" id="faq" aria-labelledby="faq-title">
+      <div class="wrap faq__grid">
+        <div class="faq__side">
+          <p class="eyebrow">FAQ</p>
+          <h2 class="title" id="faq-title" data-wipe>Questions,<br>answered.</h2>
+          <p class="body">Something else? Write to <a href="mailto:stratomediagroupcompany@gmail.com">stratomediagroupcompany@gmail.com</a>. We answer within two working days.</p>
+        </div>
+        <div class="faq__list" data-faq>
+          <details>
+            <summary>How do I film a dance battle on my iPhone?</summary>
+            <div class="faq__answer"><p>Stand at the edge of the circle with the 0.5× lens, or put the iPhone on a small tripod in the front row, and leave AfterClip running. Tap Save after a round worth keeping; the clip starts before your tap.</p></div>
+          </details>
+          <details>
+            <summary>Does AfterClip record the music?</summary>
+            <div class="faq__answer"><p>Yes. It keeps the last seconds of video and sound, and saved clips have both.</p></div>
+          </details>
+          <details>
+            <summary>Can I use it for rehearsals?</summary>
+            <div class="faq__answer"><p>Yes. Set the buffer as long as your routine, up to 30 minutes, and save the run-through you want to watch back. Everything else is overwritten.</p></div>
+          </details>
+          <details>
+            <summary>When can I get AfterClip?</summary>
+            <div class="faq__answer"><p>AfterClip is coming soon to the App Store, for iPhone and Apple Watch. Follow <a href="https://www.instagram.com/afterclipapp/">@afterclipapp on Instagram</a> to hear the moment it's out.</p></div>
+          </details>
+          <details>
+            <summary>How does it work?</summary>
+            <div class="faq__answer"><p>While AfterClip is open, it keeps the last seconds of video and sound in a buffer on your iPhone. When something happens, tap Save and you get the seconds before the tap. You choose how far back it reaches, from 10 seconds to 30 minutes.</p></div>
+          </details>
+          <details>
+            <summary>Does it record when the app is closed?</summary>
+            <div class="faq__answer"><p>No. iOS lets a camera record only while its app is on screen, so open AfterClip when you want to be ready. The Lock Screen, Control Center and the Action button get you there fastest.</p></div>
+          </details>
+          <details>
+            <summary>Where do my clips go? Is anything uploaded?</summary>
+            <div class="faq__answer"><p>Straight to your Photos library. Nothing is uploaded, and AfterClip collects no data. The buffer stays in the app's own storage on your iPhone and is constantly overwritten.</p></div>
+          </details>
+          <details>
+            <summary>How long can a clip be?</summary>
+            <div class="faq__answer"><p>As long as the buffer, up to 30 minutes. The dial above the shutter sets how many seconds a tap keeps, and you can change it right before you save.</p></div>
+          </details>
+          <details>
+            <summary>What if I save twice during the same moment?</summary>
+            <div class="faq__answer"><p>The clips join into one, with no footage saved twice. Clips that a newer clip already contains are removed for you, and iOS asks you to confirm first.</p></div>
+          </details>
+          <details>
+            <summary>Does it use a lot of battery or storage?</summary>
+            <div class="faq__answer"><p>It records while it's open, so it uses about as much battery as filming. To save power, it can hide the preview when you haven't touched the screen for a while. The buffer takes about 70 MB per minute at 1080p and 30 fps, and it's overwritten as it goes, so it never grows.</p></div>
+          </details>
+          <details>
+            <summary>What happens to the buffer if I close the app?</summary>
+            <div class="faq__answer"><p>It's kept. Reopen AfterClip and the footage it was holding is still there to save.</p></div>
+          </details>
+          <details>
+            <summary>What does the Apple Watch app do?</summary>
+            <div class="faq__answer"><p>It's a remote for your iPhone's camera. Open AfterClip on your iPhone, keep it nearby, and the watch shows a live preview: tap to focus, hold for AE/AF lock, turn the Digital Crown to zoom, and save, switch lens or change quality.</p></div>
+          </details>
+          <details>
+            <summary>Can I save with the volume buttons, a remote or a game controller?</summary>
+            <div class="faq__answer"><p>Yes. In AfterClip, open Settings → Buttons → Assign a button, then press the button you want to use. A press and a hold can do different things.</p></div>
+          </details>
+          <details>
+            <summary>Which devices does it run on?</summary>
+            <div class="faq__answer"><p>iPhone with iOS 18.2 or later, and Apple Watch with watchOS 11.2 or later. 4K, HDR, slow motion and extra lenses depend on what your iPhone's cameras can do.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Finale ───────── -->
+    <section class="finale" id="download" aria-labelledby="finale-title">
+      <div class="finale__glow" aria-hidden="true"></div>
+      <div class="finale__icon">
+        <img src="../assets/img/icon-256.png" width="128" height="128" alt="" loading="lazy" decoding="async">
+      </div>
+      <h2 class="title title--center" id="finale-title" data-wipe>Never miss the freeze again.</h2>
+      <p class="body body--center" data-reveal>Coming soon to the App Store, for iPhone and Apple Watch. Follow along on Instagram to hear the moment it's out.</p>
+      <div class="finale__ctas" data-reveal>
+        <a class="btn btn--lg" href="https://www.instagram.com/afterclipapp/" rel="me"><svg class="ico" aria-hidden="true"><use href="#i-instagram"/></svg>Follow on Instagram</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner wrap">
+      <p class="footer__brand"><picture><source srcset="../assets/img/icon-32.avif 1x, ../assets/img/icon-64.avif 2x" type="image/avif"><img src="../assets/img/icon-32.png" srcset="../assets/img/icon-32.png 1x, ../assets/img/icon-64.png 2x" width="20" height="20" alt="" loading="lazy"></picture> AfterClip</p>
+      <nav aria-label="Legal">
+        <a href="../privacy.html">Privacy Policy</a>
+        <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms of Use</a>
+        <a href="mailto:stratomediagroupcompany@gmail.com">Support</a>
+        <a href="https://www.instagram.com/afterclipapp/" rel="me">Instagram</a>
+      </nav>
+      <p class="footer__legal">© 2026 AfterClip. Apple, the Apple logo, iPhone and Apple Watch are trademarks of Apple Inc., registered in the U.S. and other countries. App Store is a service mark of Apple Inc.</p>
+    </div>
+  </footer>
+
+  <div class="global-toasts" data-global-toasts role="status" aria-live="polite"></div>
+
+  <dialog class="film" data-film aria-label="The AfterClip film">
+    <div class="film__inner">
+      <video class="film__video" data-film-video data-src="../assets/video/film.mp4" data-poster="../assets/video/film-poster.jpg"
+             playsinline controls preload="none" width="540" height="960"></video>
+      <button class="film__close" type="button" data-film-close aria-label="Close the film">
+        <svg class="ico" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </div>
+  </dialog>
+  <!-- What the page says, for search engines and assistants. The FAQ part
+       mirrors the FAQ section below: change them together. -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "MobileApplication",
+      "@id": "https://stratomediagroupltd.github.io/afterclip/#app",
+      "name": "AfterClip",
+      "alternateName": "AfterClip: Instant Replay Cam",
+      "description": "AfterClip is an iPhone camera that is always recording the last seconds, from 10 seconds up to 30 minutes. When something happens, tap Save and the clip lands in Photos, starting before the tap. It films in up to 4K with HDR and up to 240 fps, and an Apple Watch app works as a remote with a live preview.",
+      "applicationCategory": "PhotographyApplication",
+      "operatingSystem": "iOS 18.2 or later; watchOS 11.2 or later",
+      "url": "https://stratomediagroupltd.github.io/afterclip/",
+      "image": "https://stratomediagroupltd.github.io/afterclip/assets/img/icon-256.png",
+      "screenshot": "https://stratomediagroupltd.github.io/afterclip/assets/img/og.jpg",
+      "featureList": [
+        "Always keeps the last seconds of video and sound, from 10 seconds to 30 minutes",
+        "Save after the moment: the clip starts before you tap and goes straight to Photos",
+        "4K video with HDR, up to 240 fps slow motion, ultra wide, wide and telephoto lenses",
+        "Cinematic stabilization; manual resolution, frame rate and bitrate; presets",
+        "Apple Watch remote with live preview, tap to focus, AE/AF lock and Digital Crown zoom",
+        "Save with volume buttons, Camera Control, Bluetooth remotes, keyboards and game controllers",
+        "Saves that overlap join into one clip; the buffer survives a relaunch",
+        "Opens from the Lock Screen, Control Center and the Action button",
+        "Collects no data: no account, no analytics, no ads; footage stays on your devices"
+      ],
+      "publisher": {
+        "@id": "https://stratomediagroupltd.github.io/afterclip/#maker"
+      },
+      "sameAs": [
+        "https://www.instagram.com/afterclipapp/"
+      ]
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://stratomediagroupltd.github.io/afterclip/#maker",
+      "name": "AfterClip",
+      "url": "https://stratomediagroupltd.github.io/afterclip/",
+      "email": "stratomediagroupcompany@gmail.com"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://stratomediagroupltd.github.io/afterclip/#site",
+      "url": "https://stratomediagroupltd.github.io/afterclip/",
+      "name": "AfterClip",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://stratomediagroupltd.github.io/afterclip/#maker"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://stratomediagroupltd.github.io/afterclip/dance/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I film a dance battle on my iPhone?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Stand at the edge of the circle with the 0.5× lens, or put the iPhone on a small tripod in the front row, and leave AfterClip running. Tap Save after a round worth keeping; the clip starts before your tap."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does AfterClip record the music?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. It keeps the last seconds of video and sound, and saved clips have both."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I use it for rehearsals?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Set the buffer as long as your routine, up to 30 minutes, and save the run-through you want to watch back. Everything else is overwritten."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "When can I get AfterClip?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "AfterClip is coming soon to the App Store, for iPhone and Apple Watch. Follow @afterclipapp on Instagram to hear the moment it's out."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does it work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "While AfterClip is open, it keeps the last seconds of video and sound in a buffer on your iPhone. When something happens, tap Save and you get the seconds before the tap. You choose how far back it reaches, from 10 seconds to 30 minutes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it record when the app is closed?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. iOS lets a camera record only while its app is on screen, so open AfterClip when you want to be ready. The Lock Screen, Control Center and the Action button get you there fastest."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where do my clips go? Is anything uploaded?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Straight to your Photos library. Nothing is uploaded, and AfterClip collects no data. The buffer stays in the app's own storage on your iPhone and is constantly overwritten."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long can a clip be?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "As long as the buffer, up to 30 minutes. The dial above the shutter sets how many seconds a tap keeps, and you can change it right before you save."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What if I save twice during the same moment?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The clips join into one, with no footage saved twice. Clips that a newer clip already contains are removed for you, and iOS asks you to confirm first."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it use a lot of battery or storage?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It records while it's open, so it uses about as much battery as filming. To save power, it can hide the preview when you haven't touched the screen for a while. The buffer takes about 70 MB per minute at 1080p and 30 fps, and it's overwritten as it goes, so it never grows."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens to the buffer if I close the app?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It's kept. Reopen AfterClip and the footage it was holding is still there to save."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does the Apple Watch app do?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It's a remote for your iPhone's camera. Open AfterClip on your iPhone, keep it nearby, and the watch shows a live preview: tap to focus, hold for AE/AF lock, turn the Digital Crown to zoom, and save, switch lens or change quality."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I save with the volume buttons, a remote or a game controller?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. In AfterClip, open Settings → Buttons → Assign a button, then press the button you want to use. A press and a hold can do different things."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which devices does it run on?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "iPhone with iOS 18.2 or later, and Apple Watch with watchOS 11.2 or later. 4K, HDR, slow motion and extra lenses depend on what your iPhone's cameras can do."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://stratomediagroupltd.github.io/afterclip/dance/#page",
+      "url": "https://stratomediagroupltd.github.io/afterclip/dance/",
+      "name": "AfterClip for dance: save the move after the circle goes wild",
+      "description": "Film dance battles, cyphers and rehearsals on iPhone without filling it up. AfterClip keeps the last seconds, with sound, so after the move that lands you tap Save and keep it.",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://stratomediagroupltd.github.io/afterclip/#site"
+      },
+      "about": {
+        "@id": "https://stratomediagroupltd.github.io/afterclip/#app"
+      }
+    }
+  ]
+}
+  </script>
+</body>
+</html>

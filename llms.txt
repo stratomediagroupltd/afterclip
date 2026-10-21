@@ -1,0 +1,64 @@
+# AfterClip
+
+> AfterClip is an iPhone camera app that is always recording the last seconds, so you can save a moment after it happens. Tap Save and the clip lands in Photos, starting before your tap. It has an Apple Watch app that works as a remote.
+
+AfterClip runs on iPhone with iOS 18.2 or later and Apple Watch with watchOS 11.2 or later, and it's coming soon to the App Store. News of the launch is on Instagram: https://www.instagram.com/afterclipapp/
+
+## What it does
+
+- While AfterClip is open it keeps a rolling buffer of the last seconds of video and sound, from 10 seconds up to 30 minutes. Older footage is overwritten, so the buffer never grows.
+- Tap the shutter after something happens and AfterClip saves the seconds before the tap straight to the Photos library. A dial above the shutter sets how many seconds a tap keeps.
+- Filming a whole event to be safe fills an iPhone quickly: at 4K and 60 fps a minute of video takes about 440 MB, about 40 GB for a 90-minute match. A one-minute AfterClip buffer at the same quality needs about 440 MB, and that never grows.
+
+## Camera
+
+- Up to 4K with HDR, and up to 240 fps for slow motion, on the iPhones that capture them.
+- Ultra wide, wide and telephoto lenses, plus pinch to zoom.
+- Video stabilization: Off, Standard, Cinematic and Cinematic Extended.
+- Manual resolution, frame rate, bitrate and lens: the camera runs exactly as you set it.
+- Presets that save a whole setup (capture quality, clip cleanup, accent color) and switch in one tap.
+- Customizable capture tools: choose which controls are on screen and in what order.
+
+## Hands-free saving
+
+- Press or hold a volume button, squeeze Camera Control, or use a Bluetooth selfie remote, a keyboard key or a game controller. Each can be mapped to save, switch lens, change quality and more (Settings → Buttons → Assign a button).
+- Apple Watch remote: live preview of the iPhone camera, tap to focus, hold for AE/AF lock, turn the Digital Crown to zoom, save, switch lens and change quality.
+- Opens from the Lock Screen, Control Center and the Action button, ready to keep the seconds before you unlock.
+
+## Clips
+
+- Saving twice during the same moment joins the clips into one, with no footage saved twice.
+- Clips that a newer clip already contains can be removed automatically; iOS asks to confirm every deletion.
+- The buffer survives closing the app: reopen AfterClip and the footage it was holding is still there to save.
+
+## Privacy
+
+AfterClip collects no data: no account, no analytics, no advertising, no tracking and no third-party SDKs. Footage stays on the user's devices. The App Store privacy label is "Data Not Collected".
+
+## Good for
+
+Parents and pet owners (first steps, the trick you can't ask for twice), sports practice and matches, creators catching real reactions, musicians keeping the take they didn't know was the one, wildlife and anything unpredictable.
+
+## Set up for each sport
+
+A page for each, with where to put the iPhone, the settings to start with and its own questions:
+
+- Kids & family (https://stratomediagroupltd.github.io/afterclip/kids/): Catch first snow, first steps and every first on iPhone, after it happens. AfterClip keeps the last seconds, so you watch with your own eyes and tap Save when it happens.
+- Pets (https://stratomediagroupltd.github.io/afterclip/pets/): Pets never do it twice on cue. AfterClip keeps the last seconds on your iPhone, so when your cat or dog finally does the thing, tap Save and keep it, from the run-up to the landing.
+- Skateboarding (https://stratomediagroupltd.github.io/afterclip/skateboarding/): Film skateboarding on iPhone without every bail filling it up. AfterClip keeps the last seconds, so when you finally drop in or land it, you tap Save and keep the whole run.
+- Parkour (https://stratomediagroupltd.github.io/afterclip/parkour/): Film parkour and freerunning on iPhone without every attempt filling it up. AfterClip keeps the last seconds, so after a clean jump you press a remote and keep it, take-off to landing.
+- Dance (https://stratomediagroupltd.github.io/afterclip/dance/): Film dance battles, cyphers and rehearsals on iPhone without filling it up. AfterClip keeps the last seconds, with sound, so after the move that lands you tap Save and keep it.
+- Surfing (https://stratomediagroupltd.github.io/afterclip/surfing/): Film surfing from the shore on iPhone without filling it up. AfterClip keeps the last seconds, so after the ride someone taps Save and the whole wave is in the clip, drop and all.
+- Ski & snowboard (https://stratomediagroupltd.github.io/afterclip/ski/): Film skiing and snowboarding on iPhone without filling it up in the cold. AfterClip keeps the last seconds, so after the turn they finally nailed, a press on a remote keeps it.
+- Climbing (https://stratomediagroupltd.github.io/afterclip/climbing/): Film climbing on iPhone without filling it up with every attempt. AfterClip keeps the last seconds, up to 30 minutes, so after the climb you tap Save and keep it, start to top.
+- Golf (https://stratomediagroupltd.github.io/afterclip/golf/): Film your golf swing on iPhone and keep only the good ones. AfterClip keeps the last seconds, so after a great shot you tap Save on your Apple Watch, in slow motion up to 240 fps.
+- Motorcycles (https://stratomediagroupltd.github.io/afterclip/motorcycle/): Film rides and track days on iPhone without filling it up. AfterClip keeps the last seconds, so after the wheelie or the pass worth seeing, a tap on Save keeps it, start to finish.
+
+## Links
+
+- Website: https://stratomediagroupltd.github.io/afterclip/
+- Frequently asked questions: https://stratomediagroupltd.github.io/afterclip/#faq
+- Privacy policy: https://stratomediagroupltd.github.io/afterclip/privacy.html
+- Privacy policy in Russian: https://stratomediagroupltd.github.io/afterclip/ru/privacy.html
+- Support: stratomediagroupcompany@gmail.com
+- Instagram: https://www.instagram.com/afterclipapp/

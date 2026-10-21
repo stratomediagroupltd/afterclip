@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Политика конфиденциальности — AfterClip</title>
+  <meta name="description" content="AfterClip не собирает никаких данных. Ваше видео не покидает ваши устройства.">
+  <meta name="theme-color" content="#050506">
+  <link rel="icon" href="../assets/img/icon-32.png" sizes="32x32">
+  <link rel="icon" href="../assets/img/icon-64.png" sizes="64x64">
+  <link rel="canonical" href="https://stratomediagroupltd.github.io/afterclip/ru/privacy.html">
+  <link rel="alternate" hreflang="en" href="https://stratomediagroupltd.github.io/afterclip/privacy.html">
+  <link rel="alternate" hreflang="ru" href="https://stratomediagroupltd.github.io/afterclip/ru/privacy.html">
+  <link rel="alternate" hreflang="x-default" href="https://stratomediagroupltd.github.io/afterclip/privacy.html">
+  <link rel="apple-touch-icon" href="../assets/img/icon-180.png">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="AfterClip — Политика конфиденциальности">
+  <meta property="og:description" content="AfterClip не собирает никаких данных. Ваше видео не покидает ваши устройства.">
+  <meta property="og:url" content="https://stratomediagroupltd.github.io/afterclip/ru/privacy.html">
+  <meta property="og:image" content="https://stratomediagroupltd.github.io/afterclip/assets/img/og.jpg">
+  <style>
+@property --accent {
+syntax: "<color>";
+inherits: true;
+initial-value: #f54236;
+}
+:root {
+--accent: #f54236;
+--on-accent: #fff;
+--accent-ink: var(--accent);
+--bg: #050506;
+--surface: #111113;
+--surface-2: #1c1c1f;
+--line: rgb(255 255 255 / 0.09);
+--text: #f5f5f7;
+--muted: #a1a1a6;
+--faint: #86868b;
+--green: #30d158;
+--yellow: #ffd60a;
+--glass: rgb(16 16 18 / 0.68);
+--font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+--font-round: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+--font-mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+--ease: cubic-bezier(0.16, 1, 0.3, 1);
+--ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+--spring: linear(0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%, 0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.015 55%, 1.017 63.9%, 1.001 85.8%, 1);
+--wrap: min(1180px, 100% - 48px);
+--nav-h: 52px;
+color-scheme: dark;
+transition: --accent 0.6s var(--ease);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) {
+html { scroll-behavior: smooth; }
+}
+body {
+margin: 0;
+background: var(--bg);
+color: var(--text);
+font: 400 17px/1.5 var(--font);
+letter-spacing: -0.011em;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+text-rendering: optimizeLegibility;
+overflow-x: clip;
+}
+img, video, canvas, svg { display: block; max-width: 100%; }
+img, video { height: auto; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+a { color: inherit; }
+h1, h2, h3, p, ul, ol, dl, dd, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+::selection { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 80%, white); outline-offset: 3px; border-radius: 8px; }
+.visually-hidden {
+position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.ico { width: 1.15em; height: 1.15em; flex: none; fill: currentColor; }
+.wrap { width: var(--wrap); margin-inline: auto; }
+.iphone, .awatch, .watches, .hero__device, .specs__device, .duel, .storage, .tape, .ring, .dial,
+.merge, .devices, .keycap, .btn, .nav, .dock, .toast, .flyclip, .film__inner, .finale__icon, .privacy__lock, .zeros dd {
+-webkit-user-select: none; user-select: none;
+-webkit-touch-callout: none;
+}
+img { -webkit-user-drag: none; }
+.skip {
+position: fixed; left: 16px; top: -60px; z-index: 100;
+padding: 10px 16px; border-radius: 12px; background: var(--text); color: var(--bg);
+font-weight: 600; text-decoration: none; transition: top 0.2s;
+}
+.skip:focus { top: 12px; }
+.eyebrow {
+display: inline-flex; align-items: center; gap: 10px;
+margin-bottom: 18px;
+color: var(--accent-ink);
+font-size: clamp(15px, 1.2vw, 18px); font-weight: 600; letter-spacing: -0.005em;
+}
+.title {
+font-size: clamp(40px, 6.2vw, 92px);
+font-weight: 700; line-height: 1.0; letter-spacing: -0.035em;
+text-wrap: balance;
+}
+.title--center { text-align: center; }
+.body {
+max-width: 34em;
+margin-top: 24px;
+color: var(--muted);
+font-size: clamp(17px, 1.4vw, 21px); line-height: 1.5; letter-spacing: -0.015em;
+text-wrap: pretty;
+}
+.body strong { color: var(--text); font-weight: 600; }
+.body a { color: var(--text); text-underline-offset: 3px; }
+.body--center { margin-inline: auto; text-align: center; }
+.hint { color: var(--faint); font-size: 14px; }
+.rec-dot { position: relative; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+.rec-dot::after {
+content: ""; position: absolute; inset: 0; border-radius: 50%;
+background: var(--accent);
+}
+.is-live .rec-dot::after { animation: rec 1.6s ease-out infinite; }
+@keyframes rec {
+from { transform: scale(1); opacity: 0.6; }
+70%, to { transform: scale(3); opacity: 0; }
+}
+.btn {
+--btn-bg: color-mix(in srgb, var(--accent) 88%, #000);
+position: relative;
+display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+height: 48px; padding: 0 24px;
+border-radius: 999px;
+background: var(--btn-bg);
+color: var(--on-accent);
+font-size: 17px; font-weight: 600; letter-spacing: -0.015em;
+text-decoration: none; white-space: nowrap;
+box-shadow: 0 8px 30px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+transition: transform 0.5s var(--spring), box-shadow 0.3s, background-color 0.3s;
+}
+.btn:hover { transform: translateY(-1px) scale(1.02); box-shadow: 0 14px 40px -8px color-mix(in srgb, var(--accent) 80%, transparent); }
+.btn:active { transform: scale(0.97); transition-duration: 0.12s; }
+.btn--sm { height: 32px; padding: 0 14px; font-size: 14px; box-shadow: none; }
+.btn--lg { height: 56px; padding: 0 28px; font-size: 18px; }
+.btn--ghost {
+--btn-bg: rgb(255 255 255 / 0.1);
+color: var(--text);
+box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+}
+.btn--ghost:hover { --btn-bg: rgb(255 255 255 / 0.16); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22); }
+.btn__meta { color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+.arrow-link {
+display: inline-flex; align-items: center; gap: 4px;
+color: var(--accent-ink); font-weight: 600; text-decoration: none;
+}
+.arrow-link .ico { transition: transform 0.4s var(--spring); }
+.arrow-link:hover .ico { transform: translateX(4px); }
+.nav {
+position: fixed; inset: 0 0 auto; z-index: 50;
+height: var(--nav-h);
+transition: background-color 0.4s, box-shadow 0.4s;
+}
+.nav.is-scrolled {
+background: var(--glass);
+-webkit-backdrop-filter: saturate(160%) blur(16px); backdrop-filter: saturate(160%) blur(16px);
+box-shadow: 0 1px 0 var(--line);
+}
+.nav__inner {
+width: var(--wrap); height: 100%; margin-inline: auto;
+display: flex; align-items: center; gap: 24px;
+}
+.nav__brand {
+display: inline-flex; align-items: center; gap: 10px; margin-right: auto;
+font-size: 18px; font-weight: 650; letter-spacing: -0.02em; text-decoration: none;
+}
+.nav__brand img { border-radius: 6px; }
+.nav__links { display: flex; gap: 26px; }
+.nav__links a {
+position: relative;
+color: var(--muted); font-size: 14px; text-decoration: none;
+transition: color 0.25s;
+}
+.nav__links a:hover, .nav__links a[aria-current="true"] { color: var(--text); }
+.nav__links a[aria-current="true"]::after {
+content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; border-radius: 2px;
+background: var(--accent);
+}
+@media (max-width: 760px) {
+.nav__links { display: none; }
+}
+.js [data-reveal] {
+opacity: 0;
+transform: translate3d(0, 28px, 0);
+transition: opacity 0.9s var(--ease) var(--d, 0ms), transform 1.1s var(--ease) var(--d, 0ms);
+}
+.js [data-reveal].is-in { opacity: 1; transform: none; }
+.js [data-wipe] .line { display: block; overflow: clip; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+.js [data-wipe] .line > span {
+display: block;
+transform: translate3d(0, 108%, 0);
+transition: transform 1.15s var(--ease) calc(var(--i, 0) * 90ms);
+}
+.js [data-wipe].is-in .line > span { transform: none; }
+.is-live .float { animation: float 7s ease-in-out infinite alternate; }
+.is-live .float--slow { animation-duration: 9s; animation-delay: -3s; }
+.float.is-away { animation-play-state: paused; }
+@keyframes float {
+from { transform: translate3d(0, -7px, 0); }
+to { transform: translate3d(0, 7px, 0); }
+}
+.toast {
+display: inline-flex; align-items: center; gap: 0.62em;
+padding: 0.5em 1.15em 0.5em 0.62em;
+border-radius: 999px;
+background: rgb(18 22 20 / 0.92);
+color: #fff;
+font-weight: 600; letter-spacing: -0.01em; white-space: nowrap;
+box-shadow: 0 10px 30px rgb(0 0 0 / 0.35);
+}
+.toast__check {
+display: grid; place-items: center;
+width: 1.5em; height: 1.5em; border-radius: 50%;
+background: var(--green); color: #0b2a14;
+}
+.toast__check .ico { width: 1em; height: 1em; }
+.toast__meta { color: rgb(255 255 255 / 0.55); font-weight: 500; }
+.global-toasts {
+position: fixed; left: 50%; top: calc(var(--nav-h) + 14px); z-index: 60;
+display: grid; justify-items: center; gap: 8px;
+transform: translateX(-50%);
+font-size: 15px;
+pointer-events: none;
+}
+html:not(.js) [data-film-open] { display: none; }
+.film {
+width: 100vw; height: 100vh; height: 100dvh; max-width: none; max-height: none;
+margin: 0; padding: 0; border: 0;
+background: transparent; color: #fff;
+}
+.film[open] { display: grid; place-items: center; }
+.film::backdrop { background: rgb(0 0 0 / 0.86); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.film__inner {
+position: relative;
+height: min(88dvh, 960px); aspect-ratio: 9 / 16; max-width: 92vw;
+animation: film-in 0.6s var(--ease);
+}
+.film__video { width: 100%; height: 100%; border-radius: 26px; background: #000; object-fit: cover; }
+.film__close {
+position: absolute; top: 0; left: calc(100% + 14px);
+display: grid; place-items: center;
+width: 44px; height: 44px; border-radius: 50%;
+background: rgb(255 255 255 / 0.14);
+transition: background-color 0.2s;
+}
+.film__close:hover { background: rgb(255 255 255 / 0.24); }
+@media (max-width: 640px) {
+.film__close { left: auto; right: 10px; top: 10px; background: rgb(0 0 0 / 0.5); }
+}
+@keyframes film-in {
+from { opacity: 0; transform: translateY(24px) scale(0.96); }
+}
+.footer {
+position: relative;
+padding: 40px 0 calc(40px + env(safe-area-inset-bottom));
+border-top: 1px solid var(--line);
+color: var(--faint);
+font-size: 13px;
+}
+.footer__inner { display: grid; grid-template-columns: auto 1fr; gap: 14px 32px; align-items: center; }
+.footer__brand { display: inline-flex; align-items: center; gap: 8px; color: var(--text); font-weight: 600; font-size: 15px; }
+.footer__brand img { border-radius: 5px; }
+.footer nav { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: end; }
+.footer nav a { text-decoration: none; transition: color 0.2s; }
+.footer nav a:hover, .footer nav a[aria-current="page"] { color: var(--text); }
+.footer__legal { grid-column: 1 / -1; max-width: 70em; }
+@media (max-width: 640px) {
+.footer__inner { grid-template-columns: 1fr; }
+.footer nav { justify-content: start; }
+}
+@media (prefers-reduced-motion: reduce) {
+*, *::before, *::after {
+animation-duration: 0.01ms !important;
+animation-iteration-count: 1 !important;
+transition-duration: 0.01ms !important;
+}
+.js [data-reveal], .js [data-wipe] .line > span { transform: none; }
+}
+  </style>
+  <style>
+.doc {
+width: min(760px, 100% - 48px);
+margin: 0 auto;
+padding: calc(var(--nav-h) + clamp(60px, 10vh, 110px)) 0 clamp(90px, 14vh, 150px);
+}
+.doc__hero { margin-bottom: 56px; }
+.doc__hero .eyebrow { margin-bottom: 14px; }
+.doc__title {
+font-size: clamp(44px, 7vw, 80px);
+font-weight: 700; line-height: 1; letter-spacing: -0.04em;
+text-wrap: balance;
+}
+.doc__updated { margin-top: 18px; color: var(--muted); font-size: 15px; }
+.doc__summary {
+position: relative;
+margin: 34px 0 0; padding: 26px 28px 26px 84px;
+border-radius: 24px;
+background: var(--surface);
+box-shadow: inset 0 0 0 1px var(--line);
+font-size: clamp(19px, 2vw, 23px); font-weight: 600; line-height: 1.35; letter-spacing: -0.02em;
+}
+.doc__summary svg {
+position: absolute; left: 26px; top: 26px;
+width: 36px; height: 36px; color: var(--accent);
+}
+.lang-switch {
+display: inline-flex; gap: 4px; margin-bottom: 40px; padding: 4px;
+border-radius: 999px;
+background: var(--glass);
+-webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+box-shadow: inset 0 0 0 1px var(--line);
+}
+.lang-switch a {
+padding: 8px 16px; border-radius: 999px;
+color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none;
+transition: background-color 0.25s, color 0.25s;
+}
+.lang-switch a[aria-current="page"] { background: var(--surface-2); color: var(--text); }
+.lang-switch a:not([aria-current]):hover { color: var(--text); }
+.policy { scroll-margin-top: calc(var(--nav-h) + 80px); }
+.policy h2 {
+margin: 52px 0 14px;
+font-size: clamp(24px, 2.6vw, 30px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+}
+.policy p, .policy li { color: var(--muted); font-size: 18px; line-height: 1.6; text-wrap: pretty; }
+.policy p + p { margin-top: 14px; }
+.policy strong { color: var(--text); font-weight: 600; }
+.policy a { color: var(--accent-ink); text-underline-offset: 3px; }
+.policy ul { display: grid; gap: 16px; margin-top: 18px; }
+.policy li { position: relative; padding-left: 26px; }
+.policy li::before {
+content: ""; position: absolute; left: 4px; top: 0.7em;
+width: 7px; height: 7px; border-radius: 50%;
+background: var(--accent);
+}
+.lost { display: grid; justify-items: center; gap: 22px; text-align: center; }
+.lost__code { font: 800 clamp(110px, 20vw, 200px)/0.9 var(--font-round); letter-spacing: -0.05em; color: var(--accent); }
+.doc__contact { font-style: normal; color: var(--muted); font-size: 18px; line-height: 1.7; }
+.doc__contact a { color: var(--text); }
+  </style>
+  <script type="module" src="../assets/js/doc.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Перейти к содержанию</a>
+
+  <svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-lock" viewBox="0 0 48 48"><rect x="10" y="21" width="28" height="21" rx="5" fill="none" stroke="currentColor" stroke-width="3"/><path d="M16 21v-5a8 8 0 0 1 16 0v5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="31" r="2.6" fill="currentColor"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- The rest of the site is in English, so its links are too. -->
+  <header class="nav" data-nav lang="en">
+    <div class="nav__inner">
+      <a class="nav__brand" href="../" aria-label="AfterClip home">
+        <picture><source srcset="../assets/img/icon-32.avif 1x, ../assets/img/icon-64.avif 2x" type="image/avif"><img src="../assets/img/icon-32.png" srcset="../assets/img/icon-32.png 1x, ../assets/img/icon-64.png 2x" width="24" height="24" alt=""></picture>
+        <span>AfterClip</span>
+      </a>
+      <nav class="nav__links" aria-label="Sections">
+        <a href="../#how">How it works</a>
+        <a href="../#camera">Camera</a>
+        <a href="../#watch">Watch</a>
+        <a href="../#buttons">Buttons</a>
+        <a href="../#faq">FAQ</a>
+      </nav>
+      <a class="btn btn--sm" href="https://www.instagram.com/afterclipapp/">Follow</a>
+    </div>
+  </header>
+
+  <main id="main" class="doc">
+    <nav class="lang-switch" aria-label="Язык">
+      <a href="../privacy.html" lang="en" hreflang="en">English</a>
+      <a href="privacy.html" lang="ru" aria-current="page">Русский</a>
+    </nav>
+
+    <article class="policy" aria-labelledby="title">
+      <header class="doc__hero">
+        <p class="eyebrow">AfterClip</p>
+        <h1 class="doc__title" id="title">Политика конфиденциальности</h1>
+        <p class="doc__updated">Обновлено 21 октября 2026 года</p>
+        <p class="doc__summary"><svg aria-hidden="true"><use href="#i-lock"/></svg>AfterClip не собирает никаких данных. Ваше видео не покидает ваши устройства.</p>
+      </header>
+
+      <p>Здесь объясняется, что AfterClip и этот сайт делают с вашими данными. «Мы» — те, кто их создаёт; написать нам можно в любое время по адресу в конце страницы.</p>
+
+      <h2>Что мы собираем</h2>
+      <p>Через приложение — ничего. В AfterClip нет аккаунтов, аналитики, рекламы, отслеживания и сторонних SDK. Мы не получаем ваше видео, звук, фото, контакты, геопозицию, идентификаторы устройства или данные об использовании.</p>
+
+      <h2>Как приложение использует возможности устройства</h2>
+      <ul>
+        <li><strong>Камера и микрофон.</strong> Пока AfterClip открыт, он хранит последние секунды видео и звука в кольцевом буфере — в собственном хранилище приложения на iPhone, постоянно перезаписывая его. Поэтому момент можно сохранить уже после того, как он случился. Буфер остаётся на вашем iPhone.</li>
+        <li><strong>Фото.</strong> При сохранении клип добавляется в медиатеку «Фото». Если вы дадите полный доступ, AfterClip сможет удалять собственные клипы, которые уже содержатся в более новом; iOS попросит подтвердить каждое удаление.</li>
+        <li><strong>Apple Watch.</strong> Приложение для часов показывает превью и отправляет команды, например «Сохранить». Они передаются напрямую между iPhone и Apple Watch через WatchConnectivity от Apple и не отправляются нам.</li>
+        <li><strong>Экран блокировки, Пункт управления и Быстрые команды.</strong> Открывают камеру или сохраняют клип на устройстве. Никуда ничего не отправляется.</li>
+      </ul>
+
+      <h2>Покупки</h2>
+      <p>Покупки в AfterClip совершаются через App Store. Платёж обрабатывает Apple; мы не видим ваших платёжных данных. Приложение спрашивает у Apple, какие покупки у вас есть, — на этот обмен распространяется <a href="https://www.apple.com/legal/privacy/">политика конфиденциальности Apple</a>.</p>
+
+      <h2>Единственный сетевой запрос</h2>
+      <p>Для предложений, зависящих от даты, приложение узнаёт у apple.com текущую дату, чтобы перевод часов на устройстве не сдвигал их. Запрос не содержит личных данных и идентификаторов.</p>
+
+      <h2>Этот сайт</h2>
+      <p>Сайт не использует cookie и ничего не хранит на вашем устройстве. Он размещён на GitHub Pages: как любой веб-сервер, GitHub получает ваш IP-адрес, когда вы открываете страницу, и хранит его в журналах для безопасности. Это описано в <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">заявлении GitHub о конфиденциальности</a>.</p>
+      <p>Посещения мы считаем с помощью Cloudflare Web Analytics: учитываются открытая страница, сайт, с которого вы пришли, браузер, тип устройства и страна. Цифровые отпечатки не используются, и ничто из записанного не позволяет узнать вас или проследить за вами на других сайтах. На этот сервис распространяется <a href="https://www.cloudflare.com/privacypolicy/">политика конфиденциальности Cloudflare</a>.</p>
+      <p>Основание — наш законный интерес в безопасной работе сайта и в подсчёте посещений (статья 6(1)(f) GDPR). GitHub и Cloudflare находятся в США.</p>
+
+      <h2>Если вы нам пишете</h2>
+      <p>Если вы пишете нам на почту, мы получаем ваш адрес и всё, что вы присылаете, и используем это только для ответа. Мы храним переписку, только пока она нужна, чтобы вам помочь. Почтовый ящик предоставляет Google (Gmail).</p>
+
+      <h2>Ваши права</h2>
+      <p>По GDPR вы можете запросить копию ваших персональных данных, которые у нас есть, попросить исправить или удалить их, ограничить их использование или возразить против него. Поскольку приложение ничего не собирает, единственные ваши данные, которые могут у нас быть, — это письмо, которое вы нам прислали. Напишите нам по адресу ниже. Вы также можете подать жалобу в орган по защите данных в вашей стране.</p>
+
+      <h2>Дети</h2>
+      <p>AfterClip ни у кого не собирает данных, в том числе у детей.</p>
+
+      <h2>Изменения</h2>
+      <p>Если политика изменится, мы обновим эту страницу и дату выше.</p>
+
+      <h2>Контакты</h2>
+      <address class="doc__contact">
+        <a href="mailto:stratomediagroupcompany@gmail.com">stratomediagroupcompany@gmail.com</a>
+      </address>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner wrap">
+      <p class="footer__brand"><picture><source srcset="../assets/img/icon-32.avif 1x, ../assets/img/icon-64.avif 2x" type="image/avif"><img src="../assets/img/icon-32.png" srcset="../assets/img/icon-32.png 1x, ../assets/img/icon-64.png 2x" width="20" height="20" alt=""></picture> AfterClip</p>
+      <nav aria-label="Правовая информация">
+        <a href="privacy.html" aria-current="page">Политика конфиденциальности</a>
+        <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Условия использования</a>
+        <a href="mailto:stratomediagroupcompany@gmail.com">Поддержка</a>
+        <a href="https://www.instagram.com/afterclipapp/" rel="me">Instagram</a>
+      </nav>
+      <p class="footer__legal">© 2026 AfterClip. Apple, логотип Apple, iPhone и Apple Watch — товарные знаки Apple Inc., зарегистрированные в США и других странах. App Store — знак обслуживания Apple Inc.</p>
+    </div>
+  </footer>
+</body>
+</html>

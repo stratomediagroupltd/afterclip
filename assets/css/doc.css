@@ -1,0 +1,72 @@
+/*
+  AfterClip — reading pages (the privacy policy, 404): a calm measure, and
+  the same nav and footer as the home page.
+*/
+
+.doc {
+  width: min(760px, 100% - 48px);
+  margin: 0 auto;
+  padding: calc(var(--nav-h) + clamp(60px, 10vh, 110px)) 0 clamp(90px, 14vh, 150px);
+}
+
+.doc__hero { margin-bottom: 56px; }
+.doc__hero .eyebrow { margin-bottom: 14px; }
+.doc__title {
+  font-size: clamp(44px, 7vw, 80px);
+  font-weight: 700; line-height: 1; letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.doc__updated { margin-top: 18px; color: var(--muted); font-size: 15px; }
+
+.doc__summary {
+  position: relative;
+  margin: 34px 0 0; padding: 26px 28px 26px 84px;
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: clamp(19px, 2vw, 23px); font-weight: 600; line-height: 1.35; letter-spacing: -0.02em;
+}
+.doc__summary svg {
+  position: absolute; left: 26px; top: 26px;
+  width: 36px; height: 36px; color: var(--accent);
+}
+
+/* Each language is its own page, so the switch stays at the top of it. */
+.lang-switch {
+  display: inline-flex; gap: 4px; margin-bottom: 40px; padding: 4px;
+  border-radius: 999px;
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.lang-switch a {
+  padding: 8px 16px; border-radius: 999px;
+  color: var(--muted); font-size: 14px; font-weight: 600; text-decoration: none;
+  transition: background-color 0.25s, color 0.25s;
+}
+.lang-switch a[aria-current="page"] { background: var(--surface-2); color: var(--text); }
+.lang-switch a:not([aria-current]):hover { color: var(--text); }
+
+.policy { scroll-margin-top: calc(var(--nav-h) + 80px); }
+.policy h2 {
+  margin: 52px 0 14px;
+  font-size: clamp(24px, 2.6vw, 30px); font-weight: 700; letter-spacing: -0.025em; line-height: 1.15;
+}
+.policy p, .policy li { color: var(--muted); font-size: 18px; line-height: 1.6; text-wrap: pretty; }
+.policy p + p { margin-top: 14px; }
+.policy strong { color: var(--text); font-weight: 600; }
+.policy a { color: var(--accent-ink); text-underline-offset: 3px; }
+.policy ul { display: grid; gap: 16px; margin-top: 18px; }
+.policy li { position: relative; padding-left: 26px; }
+.policy li::before {
+  content: ""; position: absolute; left: 4px; top: 0.7em;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent);
+}
+
+.lost { display: grid; justify-items: center; gap: 22px; text-align: center; }
+.lost__code { font: 800 clamp(110px, 20vw, 200px)/0.9 var(--font-round); letter-spacing: -0.05em; color: var(--accent); }
+
+/* Who we are, at the end of the policy. */
+.doc__contact { font-style: normal; color: var(--muted); font-size: 18px; line-height: 1.7; }
+.doc__contact a { color: var(--text); }

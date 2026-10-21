@@ -1,0 +1,597 @@
+/*
+  AfterClip — the landing page, first half: the devices, the hero, the
+  manifesto, the tape and the buffer ring. Every scene's resting state is its
+  finished state; the script only adds motion on top (see assets/js).
+*/
+
+.section { position: relative; padding: clamp(110px, var(--vh, 1vh) * 16, 190px) 0; scroll-margin-top: var(--nav-h); }
+.section__head { margin-bottom: clamp(48px, 7vw, 84px); }
+.section__head--center { text-align: center; }
+.section__head--center .body { margin-inline: auto; }
+
+.split {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center; gap: clamp(40px, 7vw, 110px);
+}
+.split--flip .split__copy { order: 2; }
+@media (max-width: 900px) {
+  /* minmax(0, …): as wide as the screen, however wide what's inside wants to be. */
+  .split { grid-template-columns: minmax(0, 1fr); }
+  .split--flip .split__copy { order: 0; }
+}
+
+.ticks { display: grid; gap: 12px; margin-top: 30px; }
+.ticks li { display: flex; gap: 12px; align-items: baseline; font-size: 17px; }
+.ticks li::before {
+  content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; translate: 0 -2px;
+  background: var(--accent); box-shadow: 0 0 10px var(--accent);
+}
+
+/* ───────── Devices: the real frames, screens sitting in their openings ───────── */
+
+.iphone {
+  --pw: 300px;
+  position: relative;
+  width: var(--pw); aspect-ratio: 978 / 2000;
+  flex: none;
+}
+.iphone__screen {
+  position: absolute; left: 5.317%; top: 2.5%; width: 89.366%; height: 95%;
+  overflow: hidden; border-radius: 16% / 7.37%;
+  background: #000;
+  container-type: inline-size;
+}
+.iphone__screen > picture, .iphone__screen > picture img, .iphone__video {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.iphone__frame, .iphone__frame img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+.awatch { position: relative; width: var(--ww, 300px); aspect-ratio: 560 / 880; flex: none; }
+.awatch__screen {
+  position: absolute; left: 12.857%; top: 21.818%; width: 74.286%; height: 56.364%;
+  overflow: hidden; border-radius: 24% / 20.2%;
+  background: #000;
+  container-type: inline-size;
+}
+.awatch__screen picture, .awatch__screen picture img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.awatch__frame, .awatch__frame img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* ───────── Hero ───────── */
+
+.hero { position: relative; }
+.hero__stage {
+  position: relative;
+  min-height: calc(var(--vh, 1vh) * 100);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center;
+  gap: clamp(32px, 6vw, 110px);
+  padding: calc(var(--nav-h) + 24px) max(24px, (100% - 1180px) / 2) 40px;
+  overflow: clip;
+}
+/* The red light pools under the phone and fades out well before any edge. */
+.hero__stage::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: radial-gradient(42% 30% at 62% 76%, color-mix(in srgb, var(--accent) 26%, transparent), transparent);
+  pointer-events: none;
+}
+
+.hero__copy { position: relative; z-index: 2; }
+.hero__title {
+  font-size: clamp(50px, 7.2vw, 116px);
+  font-weight: 700; line-height: 0.98; letter-spacing: -0.045em;
+}
+.hero__title .line { display: block; overflow: clip; padding-bottom: 0.08em; margin-bottom: -0.08em; }
+.hero__title .line > span { display: block; }
+.hero__lede { max-width: 30em; margin-top: 26px; color: var(--muted); font-size: clamp(17px, 1.45vw, 22px); line-height: 1.45; text-wrap: pretty; }
+.hero__ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+/* Until the app is out, a quiet line where people look for the App Store button. */
+.hero__soon { display: inline-flex; align-items: center; gap: 9px; margin-top: 18px; color: var(--muted); font-size: 15px; font-weight: 500; }
+.hero__soon-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 10px color-mix(in srgb, var(--yellow) 60%, transparent); }
+
+.hero__device { position: relative; display: grid; justify-items: center; gap: 18px; z-index: 1; }
+.hero__device .iphone { --pw: calc(min(var(--vh, 1vh) * 78, 800px) * 0.489); }
+/* Light from the screen, warm like the floor in the shot. Painted once. */
+.hero__device::before {
+  content: ""; position: absolute; left: 50%; top: 46%; z-index: -1;
+  width: 230%; height: 120%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgb(214 192 168 / 0.16), transparent);
+  pointer-events: none;
+}
+.hero__hint { color: var(--faint); font-size: 14px; }
+
+/* Arriving: the title rises line by line. Everything else is simply there. */
+@keyframes hero-rise { from { transform: translate3d(0, 106%, 0); } }
+.js .hero__title .line > span { animation: hero-rise 0.9s var(--ease) both; }
+.js .hero__title .line:nth-child(2) > span { animation-delay: 0.07s; }
+
+@media (max-width: 899px) {
+  .hero__stage {
+    grid-template-columns: 1fr; grid-template-rows: auto auto;
+    align-content: start; justify-items: center; gap: 30px;
+    padding-top: calc(var(--nav-h) + 18px); padding-bottom: 18px;
+    text-align: center;
+  }
+  .hero__copy .eyebrow { margin-bottom: 12px; }
+  .hero__title { font-size: clamp(42px, 11.5vw, 72px); }
+  .hero__lede { display: none; }
+  .hero__ctas { justify-content: center; margin-top: 20px; }
+  .hero__ctas .btn--lg { height: 48px; padding: 0 20px; font-size: 16px; }
+  .hero__soon { margin-top: 12px; font-size: 14px; }
+  .hero__device .iphone { --pw: min(calc(min(var(--vh, 1vh) * 62, 620px) * 0.489), 70vw); }
+  .hero__hint { display: none; }
+}
+/* A tall phone has room for the lede (index.html sets .is-tall with --vh). */
+@media (max-width: 899px) {
+  .is-tall .hero__lede { display: block; margin-inline: auto; margin-top: 16px; font-size: 17px; }
+}
+
+/* The capture screen's live parts, sized against the screen (cqi). */
+.iphone__hud { pointer-events: none; }
+.toasts {
+  position: absolute; left: 0; right: 0; top: 14.2%; z-index: 3;
+  display: grid; justify-items: center; gap: 1.6cqi;
+  font-size: 3.9cqi;
+  pointer-events: none;
+}
+.toasts .toast { padding: 1.6cqi 4.6cqi 1.6cqi 2.2cqi; gap: 2.3cqi; }
+.shutter-hit, .shutter-ring {
+  position: absolute; left: 50%; top: 89%; z-index: 4;
+  width: 19.5%; aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.shutter-hit { -webkit-tap-highlight-color: transparent; }
+.shutter-hit:active { background: rgb(0 0 0 / 0.12); }
+.shutter-ring { pointer-events: none; box-shadow: 0 0 0 0.9cqi var(--accent), 0 0 6cqi var(--accent); opacity: 0; }
+
+.flyclip {
+  position: absolute; z-index: 5;
+  width: 112px; padding: 6px 6px 10px;
+  border-radius: 16px;
+  background: rgb(28 28 30 / 0.96);
+  box-shadow: 0 24px 60px rgb(0 0 0 / 0.5), inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  pointer-events: none;
+}
+.flyclip video { width: 100%; aspect-ratio: 9 / 16; border-radius: 11px; object-fit: cover; background: #000; }
+.flyclip p { margin-top: 8px; color: #fff; font-size: 12px; font-weight: 600; line-height: 1.25; text-align: center; }
+.flyclip p span { display: block; color: rgb(255 255 255 / 0.55); font-weight: 500; }
+
+/* ───────── Manifesto ───────── */
+
+.manifesto { padding: clamp(120px, var(--vh, 1vh) * 22, 240px) 0; }
+.manifesto__text {
+  width: var(--wrap); max-width: 1040px; margin-inline: auto;
+  font-size: clamp(30px, 4.5vw, 66px); font-weight: 650; line-height: 1.12; letter-spacing: -0.03em;
+  text-wrap: pretty;
+}
+.manifesto__text strong { font-weight: 700; }
+.js .manifesto__text .w { color: #6e6e73; transition: color 0.35s linear; }
+.js .manifesto__text .w.is-lit { color: var(--text); }
+.js .manifesto__text strong .w.is-lit { color: var(--accent); }
+
+/* ───────── How it works: the tape ───────── */
+
+.how { position: relative; scroll-margin-top: 0; }
+.js .how { height: calc(var(--vh, 1vh) * 400); }
+.how__stage {
+  --gap: clamp(26px, var(--vh, 1vh) * 6, 70px);
+  display: flex; flex-direction: column; justify-content: center; gap: var(--gap);
+  padding: calc(var(--nav-h) + 30px) 0 50px;
+  overflow: clip;
+}
+.js .how__stage { position: sticky; top: 0; height: calc(var(--vh, 1vh) * 100); }
+.how__head { position: relative; }
+.how__steps { display: grid; gap: 28px; }
+.js .how__steps { display: grid; grid-template-areas: "s"; gap: 0; }
+.how__step h3 { font-size: clamp(36px, 5vw, 72px); font-weight: 700; line-height: 1.02; letter-spacing: -0.04em; }
+.how__step p { max-width: 30em; margin-top: 16px; color: var(--muted); font-size: clamp(17px, 1.4vw, 21px); }
+.js .how__step {
+  grid-area: s;
+  opacity: 0; transform: translateY(26px);
+  transition: opacity 0.6s var(--ease), transform 0.8s var(--ease);
+  pointer-events: none;
+}
+.js .how__step.is-on { opacity: 1; transform: none; pointer-events: auto; }
+.how__dots { display: none; gap: 8px; margin-top: 26px; }
+.js .how__dots { display: flex; }
+.how__dots i { width: 28px; height: 4px; border-radius: 4px; background: var(--line); transition: background-color 0.4s, width 0.5s var(--ease); }
+.how__dots i.is-on { width: 48px; background: var(--accent); }
+
+.tape {
+  --fw: clamp(58px, 9.4vw, 132px);
+  --fh: calc(var(--fw) * 1.8333);
+  --win: 6;
+  --now: 0.76;
+  --top: 46px;
+  position: relative;
+  width: var(--wrap); margin-inline: auto;
+  height: calc(var(--fh) + var(--top) + 96px);
+}
+@media (max-width: 700px) { .tape { --win: 5; --now: 0.84; --top: 40px; } }
+/* Saved, the clip lifts by 0.4 of a frame plus 44px (scenes.js), label and
+   all: room is kept for it above the tape, so it never covers the copy. On a
+   short screen the frames get smaller until the stage fits. */
+@supports (height: 100svh) {
+  .js .tape {
+    --fw: clamp(58px, min(9.4vw, (var(--vh, 1vh) * 100 - 533px) / 2.57), 132px);
+    margin-top: max(0px, var(--fh) * 0.4 + 78px - var(--top) - var(--gap));
+  }
+}
+.tape__rec {
+  position: absolute; left: 0; top: var(--top);
+  width: calc(100% * var(--now)); height: var(--fh);
+  overflow: hidden;
+}
+.tape__rec::after {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; z-index: 2;
+  right: calc(var(--win) * var(--fw));
+  background: linear-gradient(90deg, var(--bg), rgb(5 5 6 / 0.78) 35%, rgb(5 5 6 / 0.7));
+  pointer-events: none;
+}
+/* The strip has a frame for each of the film's 26 (make-web-assets.sh). */
+.tape__film, .tape__clip-film {
+  background: url("../img/strip.jpg") 0 0 / calc(var(--fw) * 26) 100% no-repeat;
+  background-image: image-set(url("../img/strip.webp") type("image/webp"), url("../img/strip.jpg") type("image/jpeg"));
+}
+.js .tape:not(.is-near) .tape__film, .js .tape:not(.is-near) .tape__clip-film { background-image: none; }
+.tape__film {
+  position: absolute; left: 0; top: 0; height: 100%; width: calc(var(--fw) * 26);
+  will-change: transform;
+}
+/* Frame lines and sprocket holes: it's film. */
+.tape__film::before, .tape__clip-film::before {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.9) 0 3px, transparent 3px) 0 0 / var(--fw) 100%,
+    radial-gradient(circle, rgb(0 0 0 / 0.75) 0 2.5px, transparent 3px) 0 4px / calc(var(--fw) / 4) 12px repeat-x,
+    radial-gradient(circle, rgb(0 0 0 / 0.75) 0 2.5px, transparent 3px) 0 calc(100% - 4px) / calc(var(--fw) / 4) 12px repeat-x;
+}
+/* In the saved clip, lines go only between frames, never along its edges. */
+.tape__clip-film::before {
+  background:
+    radial-gradient(circle, rgb(0 0 0 / 0.75) 0 2.5px, transparent 3px) 0 4px / calc(var(--fw) / 4) 12px repeat-x,
+    radial-gradient(circle, rgb(0 0 0 / 0.75) 0 2.5px, transparent 3px) 0 calc(100% - 4px) / calc(var(--fw) / 4) 12px repeat-x;
+}
+.tape__clip-film::after {
+  content: ""; position: absolute; top: 0; bottom: 0; z-index: 2;
+  left: calc(var(--fw) - 1.5px); right: calc(var(--fw) - 1.5px);
+  background: linear-gradient(90deg, rgb(0 0 0 / 0.9) 0 3px, transparent 3px) 0 0 / var(--fw) 100%;
+}
+.tape__moment {
+  position: absolute; top: 0; left: calc(var(--fw) * var(--km, 14)); z-index: 1;
+  width: var(--fw); height: 100%;
+  box-shadow: inset 0 0 0 3px var(--yellow), 0 0 40px color-mix(in srgb, var(--yellow) 60%, transparent);
+  border-radius: 4px;
+  container-type: inline-size;
+}
+.tape__moment b {
+  position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 9px; border-radius: 999px;
+  background: var(--yellow); color: #1d1d1f;
+  font-size: 12px; font-weight: 700; line-height: 1; white-space: nowrap;
+}
+.tape__moment b i { font-style: normal; }
+/* The name only where it fits inside the frame; on a narrower one, just its star. */
+@container (max-width: 123px) {
+  .tape__moment b { justify-content: center; width: 26px; height: 26px; padding: 0; border-radius: 50%; }
+  .tape__moment b span { display: none; }
+}
+.tape__window {
+  position: absolute; top: calc(var(--top) - 8px);
+  left: calc(100% * var(--now) - var(--win) * var(--fw));
+  width: calc(var(--win) * var(--fw)); height: calc(var(--fh) + 16px);
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 2px var(--accent), 0 0 50px color-mix(in srgb, var(--accent) 35%, transparent);
+  pointer-events: none;
+}
+.tape__window span {
+  position: absolute; left: 2px; bottom: calc(100% + 10px);
+  color: var(--accent); font-size: 14px; font-weight: 600; white-space: nowrap;
+}
+.tape__over { position: absolute; left: 0; top: 10px; color: var(--faint); font-size: 14px; }
+@media (max-width: 700px) { .tape__over { display: none; } }
+.tape__now {
+  position: absolute; top: calc(var(--top) - 22px); left: calc(100% * var(--now));
+  width: 2px; height: calc(var(--fh) + 44px); margin-left: -1px;
+  background: linear-gradient(transparent, #fff 14%, #fff 86%, transparent);
+}
+.tape__now span {
+  position: absolute; left: 12px; top: -6px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.tape__now i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.is-live .tape__now i { animation: blink 1.2s steps(2, jump-none) infinite; }
+@keyframes blink { 50% { opacity: 0.25; } }
+.tape__shutter {
+  position: absolute; left: calc(100% * var(--now)); top: calc(var(--top) + var(--fh) + 34px);
+  display: grid; place-items: center;
+  width: 58px; height: 58px; border-radius: 50%;
+  transform: translateX(-50%);
+  background: #fff; color: #000;
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 7px #fff;
+  font: 800 19px/1 var(--font-round);
+  transition: transform 0.5s var(--spring), box-shadow 0.3s;
+}
+.tape__shutter.is-pressed { transform: translateX(-50%) scale(0.86); box-shadow: 0 0 0 4px var(--bg), 0 0 0 7px var(--accent), 0 0 40px var(--accent); }
+/* The saved clip is the window's frames lifted out: as wide as the window,
+   its green ring tight around the film. */
+.tape__clip {
+  position: absolute; top: var(--top); z-index: 2;
+  left: calc(100% * var(--now) - var(--win) * var(--fw));
+  width: calc(var(--win) * var(--fw)); height: var(--fh);
+  opacity: 0;
+  will-change: transform;
+}
+html:not(.js) .tape__clip { display: none; }
+.tape__clip-card {
+  position: absolute; inset: 0; overflow: hidden;
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow: 0 30px 70px rgb(0 0 0 / 0.6);
+}
+.tape__clip-card::after {
+  content: ""; position: absolute; inset: 0; z-index: 3;
+  border-radius: inherit; box-shadow: inset 0 0 0 2px var(--green);
+  pointer-events: none;
+}
+.tape__clip-film { position: absolute; inset: 0; }
+/* The moment sits inside the green ring and over the lines between frames,
+   so its ring is the same on every side. */
+.tape__clip-film .tape__moment { top: 2px; height: calc(100% - 4px); z-index: 3; }
+.tape__clip-film .tape__moment.is-first { margin-left: 2px; width: calc(var(--fw) - 2px); border-radius: 12px 4px 4px 12px; }
+.tape__clip-label {
+  position: absolute; left: 50%; top: -18px; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px 6px 8px; border-radius: 999px;
+  background: var(--green); color: #0b2a14;
+  font-size: 13px; font-weight: 700; white-space: nowrap;
+  z-index: 4;
+  opacity: 0;
+}
+.tape__clip-label .ico { width: 16px; height: 16px; }
+
+/* ───────── Rewind: the ring buffer and its dial ───────── */
+
+.ring-demo { display: grid; justify-items: center; gap: 22px; }
+.ring { position: relative; width: min(360px, 78vw); aspect-ratio: 1; border-radius: 50%; }
+.ring::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(closest-side, transparent calc(100% - 16px), rgb(255 255 255 / 0.08) calc(100% - 15px), rgb(255 255 255 / 0.08) 99%, transparent 100%);
+}
+.ring__spin { position: absolute; inset: 0; will-change: transform; }
+.ring__trail {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg, color-mix(in srgb, var(--accent) 8%, transparent) 70deg, color-mix(in srgb, var(--accent) 90%, transparent) 345deg, #fff 360deg);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 16px), #000 calc(100% - 15px));
+  mask: radial-gradient(closest-side, transparent calc(100% - 16px), #000 calc(100% - 15px));
+}
+.ring__head {
+  position: absolute; left: 50%; top: 0;
+  width: 22px; height: 22px; margin: -3px 0 0 -11px; border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 30px 6px var(--accent);
+}
+.ring__readout { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; text-align: center; }
+.ring__readout output {
+  font: 800 clamp(80px, 9vw, 124px)/0.9 var(--font-round);
+  letter-spacing: -0.04em; font-variant-numeric: tabular-nums;
+}
+.ring__readout span { margin-top: 10px; color: var(--muted); font-size: 17px; font-weight: 500; }
+.ring__note { color: var(--muted); font-size: 15px; min-height: 1.5em; }
+
+.dial {
+  --step: 66px;
+  position: relative;
+  width: min(440px, 86vw); height: 72px;
+  cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+  border-radius: 12px;
+}
+/* The fade lives on an inner window, so it can't swallow the focus ring. */
+.dial__window {
+  position: absolute; inset: 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 24%, #000 76%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 24%, #000 76%, transparent);
+}
+.dial:active { cursor: grabbing; }
+.dial__tape {
+  position: absolute; left: 50%; top: 0; height: 100%;
+  width: calc(var(--step) * 9);
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 0.85) 0 2px, transparent 2px) 0 6px / var(--step) 22px repeat-x,
+    linear-gradient(90deg, rgb(255 255 255 / 0.3) 0 1.5px, transparent 1.5px) 0 12px / calc(var(--step) / 5) 12px repeat-x;
+  background-position: -1px 6px, -0.75px 12px;
+  will-change: transform;
+}
+.dial__tape span {
+  position: absolute; top: 44px; left: 0;
+  transform: translateX(-50%);
+  color: var(--muted); font: 600 13px/1 var(--font-round); white-space: nowrap;
+  transition: color 0.3s, transform 0.3s;
+}
+.dial__tape span.is-on { color: var(--text); transform: translateX(-50%) scale(1.15); }
+.dial__pointer {
+  position: absolute; left: 50%; top: 0;
+  width: 3px; height: 30px; margin-left: -1.5px; border-radius: 3px;
+  background: var(--accent); box-shadow: 0 0 12px var(--accent);
+}
+.dial__pointer::after {
+  content: ""; position: absolute; left: 50%; top: 30px; translate: -50% 0;
+  border: 6px solid transparent; border-bottom-color: var(--accent); border-top: 0;
+}
+
+
+/* ───────── Why not film everything: two phones, one penalty ───────── */
+
+.duel {
+  display: grid; grid-template-columns: repeat(2, auto); justify-content: center;
+  column-gap: clamp(28px, 8vw, 130px); row-gap: 20px;
+}
+.duel__side { --pw: clamp(220px, 21vw, 290px); margin: 0; display: grid; justify-items: center; align-content: start; gap: 18px; }
+.duel .iphone { --pw: inherit; }
+.duel__label { color: var(--muted); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; text-align: center; }
+.duel__side--afterclip .duel__label { color: var(--accent-ink); }
+.duel__note { color: var(--muted); font-size: 14px; text-align: center; }
+.duel__note b { color: var(--text); font-weight: 600; }
+
+/* Small screens: the phones side by side, the storage cards across the width below. */
+@media (max-width: 700px) {
+  .duel { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 14px; }
+  .duel__side { display: contents; --pw: 42vw; }
+  .duel__label { grid-row: 1; }
+  .duel .iphone { grid-row: 2; justify-self: center; }
+  .duel__note { grid-row: 3; font-size: 12px; }
+  .duel .storage { grid-column: 1 / -1; }
+  .duel__side--camera .storage { grid-row: 4; }
+  .duel__side--afterclip .storage { grid-row: 5; }
+  .duel__side--camera > * { grid-column: 1; }
+  .duel__side--afterclip > * { grid-column: 2; }
+  .duel__side > .storage { grid-column: 1 / -1; }
+}
+
+/* The stock Camera (iOS 26), recording and then full, measured from the
+   real screen: black bars top and bottom, the picture between. */
+.cam { background: #000; }
+.cam__feed { position: absolute; left: 0; right: 0; top: 6.5%; height: 82%; width: 100%; background: 50% 50% / cover no-repeat; }
+.cam > span, .cam__alert { position: absolute; z-index: 2; }
+.cam__format, .cam__tools {
+  top: 10.5%; height: 9.1cqi;
+  display: flex; align-items: center;
+  border-radius: 99px; background: rgb(28 28 30 / 0.92);
+  transform: translateY(-50%);
+  color: #fff; opacity: 0;
+}
+.cam__format { left: 4.1%; padding: 0 3cqi; gap: 0.4cqi; font: 500 3.9cqi/1 var(--font-mono); }
+.cam__format small { align-self: flex-start; margin: 2.1cqi 2.4cqi 0 0.2cqi; color: rgb(255 255 255 / 0.62); font: 500 2.2cqi/1 var(--font); }
+.cam__format small:last-child { margin-right: 0; }
+.cam__tools { right: 4.1%; padding: 0 3.4cqi; gap: 4.4cqi; }
+.cam__tools svg { width: 4.6cqi; height: 4.6cqi; }
+.cam__timer {
+  left: 50%; top: 8.6%;
+  padding: 0.75cqi 2.3cqi; border-radius: 1.2cqi;
+  transform: translateX(-50%);
+  /* A shade under iOS's red, so the white digits read at 4.5:1. */
+  background: #dc2b21; color: #fff;
+  font: 500 4.8cqi/1.15 var(--font-mono); font-variant-numeric: tabular-nums;
+}
+.cam__zoom { left: 50%; top: 71.1%; display: flex; align-items: center; gap: 0; transform: translate(-50%, -50%); color: #fff; font: 500 3.3cqi/1 var(--font); }
+.cam__zoom span { display: grid; place-items: center; width: 9.9cqi; aspect-ratio: 1; border-radius: 50%; }
+.cam__zoom .is-on { background: rgb(28 28 30 / 0.72); color: #ffd60a; }
+.cam__pause, .cam__photo, .cam__record { top: 81.9%; display: grid; place-items: center; border-radius: 50%; transform: translate(-50%, -50%); }
+.cam__pause { left: 14.7%; width: 13.9cqi; aspect-ratio: 1; display: flex; justify-content: center; gap: 1.3cqi; background: rgb(44 44 46 / 0.78); }
+.cam__pause i { align-self: center; width: 1.7cqi; height: 4.4cqi; border-radius: 0.4cqi; background: #fff; }
+.cam__photo { left: 85.3%; width: 13.9cqi; aspect-ratio: 1; background: rgb(44 44 46 / 0.78); }
+.cam__photo::before { content: ""; width: 81%; aspect-ratio: 1; border-radius: 50%; background: #fff; }
+.cam__record { left: 50%; width: 20.2cqi; aspect-ratio: 1; background: rgb(44 44 46 / 0.6); box-shadow: inset 0 0 0 0.3cqi rgb(255 255 255 / 0.32); }
+.cam__record i { width: 45%; aspect-ratio: 1; border-radius: 1.9cqi; background: #ff3b30; transition: width 0.35s var(--ease), border-radius 0.35s var(--ease); }
+.cam__modes { left: 0; right: 0; top: 88.5%; bottom: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 8.6%; opacity: 0; }
+/* The last recording, as its thumbnail: match.js sets the page's own clip
+   as its picture when the clip loads, not with the page. */
+.cam__thumb { width: 12.1cqi; aspect-ratio: 1; border-radius: 50%; background: #3a3530 50% 40% / cover; box-shadow: inset 0 0 0 0.3cqi rgb(255 255 255 / 0.12); }
+.cam__switch { display: flex; padding: 0.7cqi; border-radius: 99px; background: rgb(255 255 255 / 0.07); font: 500 3.9cqi/1 var(--font); letter-spacing: 0.06em; }
+.cam__switch > * { padding: 3.2cqi 4.2cqi; border-radius: 99px; }
+.cam__switch b { background: #1c1c1e; color: #ffd60a; font-weight: 600; box-shadow: inset 0 0 0 0.25cqi rgb(255 255 255 / 0.08); }
+.cam__switch span { color: #fff; }
+.cam__flip { display: grid; place-items: center; width: 12.1cqi; aspect-ratio: 1; border-radius: 50%; background: #2c2c2e; color: #fff; }
+.cam__flip svg { width: 52%; height: 52%; }
+
+/* Full: the recording stops (the game doesn't), the screen dims, iOS says why. */
+.cam::after {
+  content: ""; position: absolute; inset: 0; z-index: 3;
+  background: rgb(0 0 0 / 0.5);
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.cam.is-full::after { opacity: 1; }
+.cam.is-full .cam__timer, .cam.is-full .cam__pause, .cam.is-full .cam__photo { opacity: 0; }
+.cam.is-full .cam__format, .cam.is-full .cam__tools, .cam.is-full .cam__modes { opacity: 1; }
+.cam.is-full .cam__record i { width: 86%; border-radius: 50%; }
+.cam__alert {
+  left: 9.5%; width: 81%; top: 39.1%; z-index: 4;
+  padding: 6.2cqi 7.4cqi 3.8cqi;
+  border-radius: 7cqi;
+  background: #262628;
+  box-shadow: inset 0 0 0 0.25cqi rgb(255 255 255 / 0.09), 0 4cqi 10cqi rgb(0 0 0 / 0.4);
+  color: #fff;
+  opacity: 0; transform: scale(1.1);
+  transition: opacity 0.22s, transform 0.42s var(--spring);
+}
+.cam.is-full .cam__alert { opacity: 1; transform: none; }
+.cam__alert-title { font: 600 4.4cqi/1.2 var(--font); }
+.cam__alert-text { margin-top: 1.6cqi; color: rgb(235 235 245 / 0.62); font: 400 3.65cqi/1.36 var(--font); }
+.cam__alert-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 2.2cqi; margin: 5.4cqi -3.6cqi 0; }
+.cam__alert-buttons span { display: grid; place-items: center; height: 12.1cqi; border-radius: 99px; background: rgb(255 255 255 / 0.14); font: 500 4.3cqi/1 var(--font); }
+.cam__alert-buttons span + span { background: #139ff5; }
+
+/* AfterClip's own controls that move: drawn here, in the app's measurements
+   (centres and sizes as a share of the 1320 × 2868 screen). */
+.hud { position: absolute; inset: 0; z-index: 2; pointer-events: none; color: #fff; }
+.hud__chip {
+  position: absolute; left: var(--x); top: 10.635%;
+  display: grid; place-content: center; justify-items: center;
+  width: 10.91%; aspect-ratio: 1; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: rgb(0 0 0 / 0.43);
+  font: 700 4.3cqi/1 var(--font-mono);
+}
+.hud__chip b { font: 700 4.5cqi/1 var(--font-mono); }
+.hud__chip small { margin-top: 0.3cqi; color: rgb(255 255 255 / 0.62); font: 600 1.9cqi/1 var(--font); letter-spacing: 0.02em; }
+.hud__chip--word { font-size: 4.6cqi; }
+.hud__chip--buffer svg { width: 3.9cqi; height: 3.9cqi; }
+.hud__chip--buffer small { margin-top: 0.4cqi; color: #fff; font: 700 2.3cqi/1 var(--font); }
+.hud__gauge {
+  position: absolute; left: 4.7%; width: 86.36%; top: 76.46%;
+  display: flex; align-items: center; gap: 2.27cqi;
+  transform: translateY(-50%);
+}
+.hud__seconds { flex: none; font: 600 3.3cqi/1 var(--font); font-variant-numeric: tabular-nums; }
+.hud__track {
+  position: relative; flex: 1; height: 1.5cqi;
+  border-radius: 1cqi; overflow: hidden;
+  background: rgb(255 255 255 / 0.22);
+}
+.hud__track i { display: block; width: 100%; height: 100%; border-radius: inherit; background: var(--accent); transform: translateX(-100%); will-change: transform; }
+/* The hero's buffer: already a full minute. */
+.hud__track--full i { transform: none; will-change: auto; }
+/* Someone taps the shutter: a touch, the face darkens, the ring flashes. */
+.hud__shade, .hud__touch, .hud .shutter-ring { position: absolute; left: 50%; top: 89%; border-radius: 50%; transform: translate(-50%, -50%); opacity: 0; }
+.hud__shade { width: 14.5%; aspect-ratio: 1; background: rgb(0 0 0 / 0.3); }
+.hud__touch { width: 13%; aspect-ratio: 1; background: rgb(255 255 255 / 0.55); box-shadow: 0 0 0 0.6cqi rgb(255 255 255 / 0.25); }
+.hud .shutter-ring { width: 19.5%; aspect-ratio: 1; box-shadow: 0 0 0 0.9cqi var(--accent), 0 0 6cqi var(--accent); }
+
+/* Storage, as iOS shows it in Settings → General → iPhone Storage. */
+.storage {
+  width: calc(var(--pw) * 1.36); padding: 16px 16px 14px;
+  border-radius: 20px; background: #1c1c1e;
+  contain: layout paint;
+  container-type: inline-size;
+}
+.storage__head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 12px; color: #8e8e93; font-size: clamp(12px, 4.4cqi, 15px); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.storage__head > span:first-child { color: #fff; font-size: clamp(14px, 5.2cqi, 18px); font-weight: 500; }
+.storage__head b { font-weight: 400; }
+.storage__bar { display: flex; height: clamp(14px, 5.6cqi, 20px); overflow: hidden; border-radius: 5px; background: #000; }
+.storage__seg, .storage__rest { flex: 0 0 calc(var(--gb) / 256 * 100%); }
+.storage__seg { box-shadow: inset -1.5px 0 0 #000; }
+.storage__rest { display: flex; }
+.storage__rest .storage__seg { flex-basis: calc(var(--gb) / var(--rest-gb, 41.4) * 100%); }
+.storage__seg--photos, [data-storage-rest] { transform-origin: left; will-change: transform; }
+/* All six on one line: the legend scales with its card. */
+.storage__legend { display: flex; flex-wrap: nowrap; justify-content: space-between; margin-top: 11px; color: #fff; font-size: clamp(8px, 3cqi, 12px); white-space: nowrap; }
+.storage__key { display: inline-flex; align-items: center; gap: 0.4em; }
+.storage__key::before { content: ""; width: 0.72em; height: 0.72em; border-radius: 50%; background: var(--c); }
+.storage__seg--photos, .storage__key--photos { --c: #ff453a; background: var(--c); }
+.storage__seg--apps, .storage__key--apps { --c: #ff9f0a; background: var(--c); }
+.storage__seg--music, .storage__key--music { --c: #ffd60a; background: var(--c); }
+.storage__seg--mail, .storage__key--mail { --c: #30d158; background: var(--c); }
+.storage__seg--ios, .storage__key--ios { --c: #636366; background: var(--c); }
+.storage__seg--system, .storage__key--system { --c: #48484a; background: var(--c); }
+.storage__key { background: none; }
+@media (max-width: 700px) {
+  .storage { width: 100%; }
+  /* Stacked under both phones, each card says whose it is. */
+  .storage::before { content: attr(data-owner); display: block; margin-bottom: 10px; color: var(--muted); font-size: 12px; font-weight: 600; }
+}
+
+.match__end { display: grid; justify-items: center; gap: 22px; margin-top: clamp(40px, 6vw, 70px); }
+.match__replay[hidden] { display: none; }
