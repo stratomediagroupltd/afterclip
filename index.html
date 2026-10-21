@@ -1414,19 +1414,26 @@ container-type: inline-size;
         <header class="section__head section__head--center">
           <p class="eyebrow">Clips</p>
           <h2 class="title" id="joins-title" data-wipe>One moment.<br>One clip.</h2>
-          <p class="body" data-reveal>Saved a second too early? Tap Save again. The clips join into one, with no footage saved twice.</p>
+          <p class="body" data-reveal>Tapped Save and the moment kept going? Tap again. You get one longer clip, not two that repeat each other.</p>
         </header>
-        <div class="merge" aria-hidden="true">
-          <div class="merge__scale"><span style="--at: 0">−15 s</span><span style="--at: 5">−10 s</span><span style="--at: 10">−5 s</span><span style="--at: 15">Tap</span><span style="--at: 17">Tap again</span></div>
-          <div class="merge__lanes" data-merge>
-            <div class="merge__goo">
-              <span class="merge__bar merge__bar--a" data-merge-a></span>
-              <span class="merge__bar merge__bar--b" data-merge-b></span>
-            </div>
-            <span class="merge__label merge__label--a" data-merge-la>Saved 15s</span>
-            <span class="merge__label merge__label--b" data-merge-lb>Saved 15s</span>
-            <span class="merge__label merge__label--one" data-merge-one><svg class="ico"><use href="#i-check"/></svg>One clip · 17s</span>
-            <span class="merge__moment"><svg class="ico" aria-hidden="true"><use href="#i-sparkle"/></svg></span>
+        <!-- Three steps, played in turn while it's on screen (clips.js); without the
+             script, the last one shows. -->
+        <div class="merge" data-merge data-step="3">
+          <ol class="merge__steps">
+            <li><button type="button" data-merge-go="1"><b>1</b><span>Tap Save. The 15 seconds before your tap are saved.</span></button></li>
+            <li><button type="button" data-merge-go="2"><b>2</b><span>The moment goes on. You tap again, 2 seconds later.</span></button></li>
+            <li><button type="button" data-merge-go="3" aria-current="step"><b>3</b><span>AfterClip joins the two: one 17‑second clip, nothing in it twice.</span></button></li>
+          </ol>
+          <div class="merge__track" aria-hidden="true">
+            <span class="merge__tap merge__tap--1"><b>1</b></span>
+            <span class="merge__tap merge__tap--2"><b>2</b></span>
+            <span class="merge__clip merge__clip--first"></span>
+            <span class="merge__note merge__note--first">15 s</span>
+            <span class="merge__clip merge__clip--second"></span>
+            <span class="merge__twice">13 s already saved</span>
+            <span class="merge__note merge__note--new">+2 s</span>
+            <span class="merge__clip merge__clip--one"></span>
+            <span class="merge__note merge__note--one"><svg class="ico"><use href="#i-check"/></svg>One clip · 17 s</span>
           </div>
         </div>
         <ul class="details">

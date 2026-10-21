@@ -1,7 +1,7 @@
 // scenes.js: the scroll-driven stories: the manifesto lit word by word,
 // the film tape where scrolling is time, and two saves melting into one clip.
 
-import { $, $$, onScroll, onResize, sceneBox, pinnedProgress, progress, easeInOut, scrub, watchVisibility } from "./motion.js";
+import { $, $$, onScroll, onResize, sceneBox, pinnedProgress, progress, scrub, watchVisibility } from "./motion.js";
 
 // ───────── Manifesto ─────────
 
@@ -152,35 +152,7 @@ function startTape() {
   });
 }
 
-// ───────── Two saves, one clip ─────────
-
-/** The second save's lane, in px from the top; it rises into the first's. */
-const LANE_B = 108;
-const LANE_A = 34;
-
-function startMerge() {
-  const merge = $("[data-joins] .merge");
-  if (!merge) return;
-  const lanes = $("[data-merge]", merge);
-  const box = sceneBox(lanes);
-  const rise = [{ transform: "none" }, { transform: `translate3d(0, ${LANE_A - LANE_B}px, 0)` }];
-  const seekBar = scrub($("[data-merge-b]", merge), rise);
-  const seekLabel = scrub($("[data-merge-lb]", merge), rise);
-  let last = -1;
-  onScroll((y, { height }) => {
-    const centre = box.top + box.height / 2;
-    const join = easeInOut(progress(y, centre - height * 0.88, centre - height * 0.5));
-    if (join === last) return;
-    last = join;
-    seekBar(join);
-    seekLabel(join);
-    const one = join > 0.97;
-    if (merge.classList.contains("is-one") !== one) merge.classList.toggle("is-one", one);
-  });
-}
-
 export function startScenes() {
   startManifesto();
   startTape();
-  startMerge();
 }

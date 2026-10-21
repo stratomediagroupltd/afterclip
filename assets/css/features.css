@@ -32,8 +32,12 @@
 
 /* The app's own screens, one per spec, cross-fading. */
 .specs__shot, .specs__shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.js .specs__shot { opacity: 0; transition: opacity 0.6s var(--ease); }
-.js .specs__shot.is-on { opacity: 1; }
+/* The next screen dissolves in on top; the last one stays put beneath it and
+   goes only once it's covered, so the phone never dims in between. */
+.js .specs__shot { opacity: 0; transition: opacity 0.2s linear 0.5s; }
+.js .specs__shot.is-on { z-index: 1; opacity: 1; transition: opacity 0.5s var(--ease-in-out); }
+/* Near the section, every screen gets its own layer before it's needed. */
+.specs.is-near .specs__shot { will-change: opacity; }
 
 @media (max-width: 899px) {
   .specs { grid-template-columns: 1fr; gap: 30px; }
@@ -198,40 +202,93 @@
 
 /* ───────── Saves that join ───────── */
 
-.merge { max-width: 900px; margin: 0 auto; padding: 0 4px; }
-/* Seconds along a 17-second line: the first tap at 15, the second at 17. */
-.merge__scale { position: relative; height: 13px; margin-bottom: 18px; color: var(--faint); font: 600 13px/1 var(--font-mono); }
-.merge__scale span { position: absolute; left: calc(var(--at) / 17 * 100%); transform: translateX(-50%); white-space: nowrap; }
-.merge__scale span:first-child { transform: none; }
-.merge__scale span:last-child { transform: translateX(-100%); color: var(--text); }
-.merge__scale span:nth-child(4) { color: var(--text); }
-.merge__lanes { position: relative; height: 170px; }
-.merge__goo { position: absolute; inset: 0; }
-.merge__bar {
-  position: absolute; height: 48px; border-radius: 24px;
+.merge { max-width: 900px; margin: 0 auto; }
+
+/* The three steps; the one playing is lit, and any can be chosen. */
+.merge__steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 40px; }
+.merge__steps button {
+  display: flex; align-items: flex-start; gap: 12px; width: 100%; height: 100%;
+  padding: 16px 18px; border: 1px solid var(--line); border-radius: 18px; background: none;
+  color: var(--faint); font: inherit; font-size: 15px; line-height: 1.4; text-align: left; cursor: pointer;
+  transition: color 0.3s, border-color 0.3s, background-color 0.3s;
+}
+.merge__steps button:hover { color: var(--muted); }
+.merge__steps b, .merge__tap b {
+  flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%;
+  background: rgb(255 255 255 / 0.12); color: var(--text); font-size: 13px; font-weight: 700; line-height: 1;
+  transition: background-color 0.3s, color 0.3s;
+}
+.merge__steps [aria-current="step"] { color: var(--text); border-color: rgb(255 255 255 / 0.2); background: rgb(255 255 255 / 0.05); }
+.merge__steps [aria-current="step"] b { background: var(--accent); color: var(--on-accent); }
+.merge__steps li:last-child [aria-current="step"] b { background: var(--green); color: #032b10; }
+
+/* Eighteen seconds along: the first tap at 15, the second at 17. */
+.merge__track { --lane-1: 46px; --lane-2: 116px; --bar: 48px; position: relative; height: 170px; }
+.merge__tap { position: absolute; top: 0; bottom: 0; width: 24px; margin-left: -12px; opacity: 0; transition: opacity 0.4s; }
+.merge__tap::after {
+  content: ""; position: absolute; left: 50%; top: 30px; bottom: 0; width: 0;
+  border-left: 2px dashed rgb(255 255 255 / 0.35);
+}
+.merge__tap b { background: var(--accent); color: var(--on-accent); }
+.merge__tap--1 { left: calc(15 / 18 * 100%); }
+.merge__tap--2 { left: calc(17 / 18 * 100%); }
+
+/* Clips grow from the tap back (clipped, so their round ends stay round). */
+.merge__clip {
+  position: absolute; height: var(--bar); border-radius: calc(var(--bar) / 2);
   background: linear-gradient(90deg, #a8251c, #d2352a);
-  width: calc(15 / 17 * 100%);
+  clip-path: inset(0 0 0 100% round calc(var(--bar) / 2));
+  transition: clip-path 0.8s var(--ease-in-out), transform 0.6s var(--ease-in-out), opacity 0.4s;
 }
-.merge__bar--a { left: 0; top: 34px; }
-.merge__bar--b { left: calc(2 / 17 * 100%); top: 34px; }
-.js .merge__bar--b { top: 108px; }
-.merge__label { position: absolute; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; white-space: nowrap; transition: opacity 0.4s; }
-.merge__label--a { left: 18px; top: 46px; color: var(--on-accent); }
-.merge__label--b { right: 18px; top: 46px; color: var(--on-accent); }
-.js .merge__label--b { top: 120px; }
-.merge__label--one { left: 50%; top: 0; transform: translateX(-50%); color: var(--green); opacity: 1; }
-.js .merge__label--one { opacity: 0; }
-.js .merge.is-one .merge__label--one { opacity: 1; }
-.js .merge.is-one .merge__label--a, .js .merge.is-one .merge__label--b { opacity: 0; }
-html:not(.js) .merge__label--a, html:not(.js) .merge__label--b { display: none; }
-.merge__label--one .ico { width: 18px; height: 18px; }
-.merge__moment {
-  position: absolute; left: calc(16 / 17 * 100%); top: 28px; z-index: 2;
-  display: grid; place-items: center; width: 26px; height: 26px; margin-left: -13px; border-radius: 50%;
-  background: var(--yellow); color: #1d1d1f;
-  box-shadow: 0 0 24px var(--yellow);
+.merge__clip--first { top: var(--lane-1); left: 0; width: calc(15 / 18 * 100%); }
+.merge__clip--second { top: var(--lane-2); left: calc(2 / 18 * 100%); width: calc(15 / 18 * 100%); }
+.merge__clip--one {
+  top: var(--lane-1); left: 0; width: calc(17 / 18 * 100%); opacity: 0;
+  clip-path: inset(0 calc(2 / 17 * 100%) 0 0 round calc(var(--bar) / 2));
+  box-shadow: inset 0 0 0 2px var(--green);
 }
-.merge__moment .ico { width: 16px; height: 16px; }
+.merge__note, .merge__twice {
+  position: absolute; height: var(--bar);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  color: #fff; font-size: 14px; font-weight: 700; white-space: nowrap;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none;
+}
+.merge__note--first { top: var(--lane-1); left: 0; width: calc(15 / 18 * 100%); }
+.merge__note--new { top: var(--lane-2); left: calc(15 / 18 * 100%); width: calc(2 / 18 * 100%); font-size: 13px; }
+.merge__note--one { top: var(--lane-1); left: 0; width: calc(17 / 18 * 100%); }
+.merge__note--one .ico { width: 18px; height: 18px; color: var(--green); }
+/* What the second clip would repeat. */
+.merge__twice {
+  top: var(--lane-2); left: calc(2 / 18 * 100%); width: calc(13 / 18 * 100%);
+  border-radius: calc(var(--bar) / 2) 0 0 calc(var(--bar) / 2);
+  background: repeating-linear-gradient(135deg, rgb(0 0 0 / 0.5) 0 7px, rgb(0 0 0 / 0.25) 7px 14px);
+  font-size: 13px; font-weight: 600;
+}
+
+/* Step 1: the first save. */
+.merge:is([data-step="1"], [data-step="2"], [data-step="3"]) .merge__tap--1,
+.merge:is([data-step="2"], [data-step="3"]) .merge__tap--2 { opacity: 1; }
+.merge:is([data-step="1"], [data-step="2"], [data-step="3"]) .merge__clip--first { clip-path: inset(0 round calc(var(--bar) / 2)); }
+.merge:is([data-step="1"], [data-step="2"]) .merge__note--first { opacity: 1; transition-delay: 0.5s; }
+/* Step 2: the second save, most of it a repeat. */
+.merge:is([data-step="2"], [data-step="3"]) .merge__clip--second { clip-path: inset(0 round calc(var(--bar) / 2)); }
+.merge[data-step="2"] :is(.merge__twice, .merge__note--new) { opacity: 1; transition-delay: 0.6s; }
+/* Step 3: the second rises into the first, and they're one clip. */
+.merge[data-step="3"] .merge__clip--second { transform: translateY(calc(var(--lane-1) - var(--lane-2))); opacity: 0; }
+.merge[data-step="3"] .merge__clip--first { opacity: 0; transition-delay: 0s, 0s, 0.9s; }
+.merge[data-step="3"] .merge__clip--one {
+  opacity: 1; clip-path: inset(0 round calc(var(--bar) / 2));
+  transition-delay: 0.45s, 0s, 0.45s;
+}
+.merge[data-step="3"] .merge__note--one { opacity: 1; transition-delay: 1.1s; }
+/* Back to the start between rounds, without playing the steps backwards. */
+.merge.is-resetting, .merge.is-resetting * { transition: none !important; }
+
+@media (max-width: 700px) {
+  .merge__steps { grid-template-columns: 1fr; gap: 8px; margin-bottom: 30px; }
+  .merge__steps button { padding: 12px 14px; font-size: 14px; }
+  .merge__note, .merge__twice { font-size: 12px; }
+}
 .details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; margin-top: clamp(70px, 9vw, 110px); }
 @media (max-width: 800px) { .details { grid-template-columns: 1fr; } }
 .details li { padding-top: 22px; border-top: 1px solid var(--line); }
@@ -303,11 +360,6 @@ html:not(.js) .merge__label--a, html:not(.js) .merge__label--b { display: none; 
   box-shadow: 0 30px 80px color-mix(in srgb, var(--accent) 45%, transparent), 0 10px 30px rgb(0 0 0 / 0.5);
 }
 .finale__ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 36px; }
-
-/* Small screens: the two taps are too close to label both. */
-@media (max-width: 600px) {
-  .merge__scale span:nth-child(2), .merge__scale span:nth-child(4) { display: none; }
-}
 
 /* ───────── A sport's own set-up (its page only) ───────── */
 

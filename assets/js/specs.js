@@ -2,7 +2,7 @@
 // (on small screens, while you swipe its cards), and shows the app's own
 // screen for whichever spec you're reading.
 
-import { $, $$ } from "./motion.js";
+import { $, $$, watchVisibility } from "./motion.js";
 
 const NARROW = matchMedia("(max-width: 899px)");
 
@@ -12,6 +12,12 @@ export function startSpecs() {
   const specs = $$(".spec", section);
   const shots = $$("[data-shot]", section);
   const list = $("[data-specs-list]", section);
+
+  // Every screen decoded before the section arrives, so none is decoded mid-fade.
+  watchVisibility(section, (near) => {
+    $(".specs", section)?.classList.toggle("is-near", near);
+    if (near) shots.forEach((shot) => $("img", shot)?.decode().catch(() => { /* It shows when it's ready. */ }));
+  }, { rootMargin: "600px 0px" });
 
   let current = 0;
   const choose = (index) => {

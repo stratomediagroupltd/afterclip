@@ -5,6 +5,7 @@ import { startScroll, startReveals } from "./motion.js";
 import { startSaves } from "./saves.js";
 import { startHero } from "./hero.js";
 import { startScenes } from "./scenes.js";
+import { startClips } from "./clips.js";
 import { startMatch } from "./match.js";
 import { startSpecs } from "./specs.js";
 import { startDemos } from "./demos.js";
@@ -18,7 +19,7 @@ requestAnimationFrame(() => document.documentElement.classList.add("is-live"));
 // motion styles back on: the script is here now.
 document.documentElement.classList.add("js");
 
-const parts = [startReveals, startHero, startScenes, startMatch, startSpecs, startDemos, startWatch, startSaves, startPage, startScroll];
+const parts = [startReveals, startHero, startScenes, startClips, startMatch, startSpecs, startDemos, startWatch, startSaves, startPage, startScroll];
 parts.forEach((start) => {
   // One broken part shouldn't take the rest of the page with it.
   try {
