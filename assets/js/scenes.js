@@ -148,7 +148,6 @@ function startTape() {
     if (nextStep !== step) {
       steps.forEach((element, index) => element.classList.toggle("is-on", index === nextStep));
       dots.forEach((element, index) => element.classList.toggle("is-on", index === nextStep));
-      tape.classList.toggle("is-moment", nextStep >= 1);
       step = nextStep;
     }
 

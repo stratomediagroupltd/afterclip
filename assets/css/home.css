@@ -274,10 +274,6 @@
   background: var(--yellow); color: #1d1d1f;
   font-size: 12px; font-weight: 700; line-height: 1; white-space: nowrap;
 }
-/* On the tape, the moment is just another frame until it has been recorded
-   ("Something happens"); then it lights up. */
-.tape__film .tape__moment { transition: opacity 0.35s var(--ease-in-out); }
-.js .tape:not(.is-moment) .tape__film .tape__moment { opacity: 0; }
 /* A drawn star, so it sits in the middle of the label whatever the font. */
 .tape__moment b .ico { width: 15px; height: 15px; }
 /* The name only where it fits inside the frame (the label is 110 px), with
