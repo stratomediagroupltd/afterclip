@@ -54,16 +54,19 @@ function startManifesto() {
 // ───────── How it works: the tape ─────────
 //
 // Time is measured in frames of the strip. The film moves left past "Now";
-// whatever is in the window is what a tap would keep. The numbers are
-// chosen so the moment arrives in step two and the save, in step three,
-// lands on a frame boundary with the moment still inside the window.
+// whatever is in the window is what a tap would keep. It starts with the
+// moment next in line: one frame of scrolling records it (step two), two
+// more bring the save (step three), on a frame boundary with the moment
+// still inside the window, and one more shows the tape rolling on.
 
 const TAPE = {
-  startFrame: 9,
-  spanFrames: 14,
+  startFrame: 14,
+  spanFrames: 4,
   momentFrame: 14,
-  saveAt: 5 / 7,
-  stepsAt: [0, 0.34, 0.68],
+  saveAt: 3 / 4,
+  stepsAt: [0, 1 / 4, 3 / 4],
+  /** How much of the scene the saved clip takes to lift out. */
+  lift: 0.15,
 };
 
 function startTape() {
@@ -92,7 +95,7 @@ function startTape() {
   const size = { frame: 100, frameHeight: 177, window: 6, now: 600 };
   // The film, the saved clip and its label each follow the scroll along a
   // scrubbed animation (see scrub), rebuilt whenever the tape changes size.
-  const end = TAPE.saveAt + 0.1;
+  const end = TAPE.saveAt + TAPE.lift;
   let seekFilm = () => {};
   let seekClip = () => {};
   const seekLabel = scrub(clipLabel, [
@@ -145,6 +148,7 @@ function startTape() {
     if (nextStep !== step) {
       steps.forEach((element, index) => element.classList.toggle("is-on", index === nextStep));
       dots.forEach((element, index) => element.classList.toggle("is-on", index === nextStep));
+      tape.classList.toggle("is-moment", nextStep >= 1);
       step = nextStep;
     }
 

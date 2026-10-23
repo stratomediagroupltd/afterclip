@@ -558,7 +558,7 @@ text-wrap: pretty;
 .js .manifesto__text .w.is-lit { color: var(--text); }
 .js .manifesto__text strong .w.is-lit { color: var(--accent); }
 .how { position: relative; scroll-margin-top: 0; }
-.js .how { height: calc(var(--vh, 1vh) * 400); }
+.js .how { height: calc(var(--vh, 1vh) * 220); }
 .how__stage {
 --gap: clamp(26px, var(--vh, 1vh) * 6, 70px);
 display: flex; flex-direction: column; justify-content: center; gap: var(--gap);
@@ -651,6 +651,8 @@ padding: 3px 9px 3px 7px; border-radius: 999px;
 background: var(--yellow); color: #1d1d1f;
 font-size: 12px; font-weight: 700; line-height: 1; white-space: nowrap;
 }
+.tape__film .tape__moment { transition: opacity 0.35s var(--ease-in-out); }
+.js .tape:not(.is-moment) .tape__film .tape__moment { opacity: 0; }
 .tape__moment b .ico { width: 15px; height: 15px; }
 @container (max-width: 127px) {
 .tape__moment b { justify-content: center; width: 26px; height: 26px; padding: 0; border-radius: 50%; }
